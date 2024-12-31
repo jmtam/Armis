@@ -1,65 +1,151 @@
-// import httpAxios from "./http-common";
-// import { carrosJSON } from "./datosJSON";
-//import Cookie from "universal-cookie";
+import secureLocalStorage from "react-secure-storage";
+
+const APIUrl = "http://107.23.228.203:10777";
+//const APIUrl =  "http://15.229.193.237:10777"
 
 const getLoginToken = async (email, pwd) => {
-  // var data = {
-  //   email: email,
-  //   pwd: pwd,
-  // };
-  // return await httpAxios.post("/auth/acceso_login", data);
-
-  if (email === "admin@armis.com" && pwd === "123456") {
-    return Promise.resolve({
-      data: {
-        token: "selogueoperfectamente15500",
-        usuario: "Mario",
-        dni: "27.872.828",
-      },
+  return fetch(APIUrl + "/monitorGetToken", {
+    method: "post",
+    body: new URLSearchParams({
+      user: email,
+      pass: pwd,
+    }).toString(),
+  })
+    .then((response) => {
+      if (response.ok) return Promise.resolve(response.json());
+      else {
+        return Promise.reject(response);
+      }
+    })
+    .catch((err) => {
+      return Promise.reject(err);
     });
-  } else return Promise.reject(new Error());
 };
 
 const getPanelTopMetricas = async () => {
-  return fetch(process.env.REACT_APP_APIURL + "/monitorUpdateTop", {
-    method: "post",
+  const token = secureLocalStorage.getItem("token");
+
+  const myHeaders = new Headers();
+  myHeaders.append("Authorization", "Bearer " + token);
+
+  return fetch(APIUrl + "/monitorUpdateTop", {
+    method: "POST",
     headers: {
-      //"Access-Control-Allow-Headers": "*",
-      // "Access-Control-Allow-Origin": "*",
-      // "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE",
+      Authorization: "Bearer " + token,
     },
-  }).then((response) => response.json());
-  //return await httpAxios.post("/monitorUpdateLeft");
+  })
+    .then((response) => {
+      if (response.ok) return Promise.resolve(response.json());
+      else {
+        console.error(response);
+        return Promise.reject(response);
+      }
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
 };
 
 const getPanelLeftPrestadores = async () => {
-  return fetch(process.env.REACT_APP_APIURL + "/monitorUpdateLeft", {
+  const token = secureLocalStorage.getItem("token");
+
+  return fetch(APIUrl + "/monitorUpdateLeft", {
     method: "post",
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      //"Access-Control-Allow-Headers": "*",
-      // "Access-Control-Allow-Origin": "*",
-      // "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE",
+      Authorization: "Bearer " + token,
     },
-  }).then((response) => response.json());
+  })
+    .then((response) => {
+      if (response.ok) return Promise.resolve(response.json());
+      else {
+        console.error(response);
+        return Promise.reject(response);
+      }
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
 };
 
-const getPanelRightLogs = async (id) => {
-  //alert("services" + id);
+const getPanelRightLogs = async (id, lastIndex) => {
+  //alert("services" + lastIndex);
 
-  return fetch(process.env.REACT_APP_APIURL + "/monitorUpdateRight", {
+  const token = secureLocalStorage.getItem("token");
+
+  //console.log(lastIndex);
+  return fetch(APIUrl + "/monitorUpdateRight", {
     method: "post",
     headers: {
-      //"Access-Control-Allow-Headers": "*",
-      // "Access-Control-Allow-Origin": "*",
-      // "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE",
+      Authorization: "Bearer " + token,
     },
-
     body: new URLSearchParams({
-      rowIndex: id,
+      integrationId: id,
+      lastLogId: lastIndex,
     }).toString(),
-  }).then((response) => response.json());
-  //return await httpAxios.post("/monitorUpdateLeft");
+  })
+    .then((response) => {
+      if (response.ok) return Promise.resolve(response.json());
+      else {
+        return Promise.reject(response);
+      }
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+};
+
+const getPanelRightLogById = async (integracionId, logId) => {
+  //alert("services" + id);
+
+  const token = secureLocalStorage.getItem("token");
+
+  return fetch(APIUrl + "/monitorRestoreLogId", {
+    method: "post",
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+    body: new URLSearchParams({
+      integrationId: integracionId,
+      restoreLogId: logId,
+    }).toString(),
+  })
+    .then((response) => {
+      if (response.ok) return Promise.resolve(response.json());
+      else {
+        console.error(response);
+        return Promise.reject(response);
+      }
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+};
+
+const setPanelConfig = async (item, value) => {
+  //alert("services" + id);
+
+  const token = secureLocalStorage.getItem("token");
+
+  return fetch(APIUrl + "/monitorConfig", {
+    method: "post",
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+    body: new URLSearchParams({
+      itemName: item,
+      itemVal: value,
+    }).toString(),
+  })
+    .then((response) => {
+      if (response.ok) return Promise.resolve(response.json());
+      else {
+        console.error(response);
+        return Promise.reject(response);
+      }
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
 };
 
 const AppService = {
@@ -67,6 +153,26 @@ const AppService = {
   getPanelTopMetricas,
   getPanelLeftPrestadores,
   getPanelRightLogs,
+  getPanelRightLogById,
+  setPanelConfig,
 };
 
 export default AppService;
+
+// const myPromise = new Promise((resolve, reject) => {
+//   let xhr = new XMLHttpRequest();
+//   xhr.open("POST", APIUrl + "/monitorUpdateTop");
+
+//   xhr.setRequestHeader("Authorization", "Bearer " + token);
+//   xhr.onload = function () {
+//     return Promise.resolve(JSON.stringify(xhr.responseText));
+//   };
+
+//   xhr.onerror = function (err) {
+//     return Promise.reject(err);
+//   };
+
+//   xhr.send();
+// });
+
+// myPromise.then((response) => alert(response));

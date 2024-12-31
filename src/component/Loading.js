@@ -1,18 +1,32 @@
 import React from "react";
-import { Spinner } from "react-bootstrap";
+import { Spinner, Row, Col } from "react-bootstrap";
 //import loading from '../assets/img/loading.gif';
 export const Loading = () => {
   return (
-    <div
-      style={{
-        textAlign: "center",
-        padding: "5%",
-        alignContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Spinner style={{ width: "2rem", height: "2rem", color: "green" }} />
-      {" Cargando.... "}
-    </div>
+    <>
+      <Row
+        style={{
+          textAlign: "center",
+          padding: "0%",
+          alignContent: "center",
+          width: "100%",
+        }}
+      >
+        <Col
+          lg={12}
+          md={12}
+          sm={12}
+          style={{
+            padding: "2%",
+            alignContent: "center",
+            alignItems: "center",
+            justifyContent: "center",
+            justifyItems: "center",
+          }}
+        >
+          <Spinner style={{ width: "3rem", height: "3rem", color: "green" }} />
+        </Col>
+      </Row>
+    </>
   );
 };

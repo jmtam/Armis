@@ -6,25 +6,25 @@ import { Container, Alert, Row, Button, Col } from "react-bootstrap";
 export const Errores = () => {
   const [moreInfo, setmoreInfo] = useState(false);
 
-  const { cleanError, errores, setLogout } = useContext(GlobalContext);
+  const { cleanError, errores, setLogout, setTimer } =
+    useContext(GlobalContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!errores) navigate("/");
-
-    if (
-      errores &&
-      (errores.status === "401" || JSON.parse(errores).status === "401")
-    ) {
+    //setTimer(0);
+    //alert(JSON.stringify(errores));
+    if (errores && errores.status === 401) {
+      //alert(JSON.stringify(errores));
       setLogout();
-      navigate("/");
     }
 
+    //if (!errores) navigate("/");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [errores, navigate]);
+  }, [errores]);
 
-  const handleBorrarError = () => {
-    cleanError();
+  const handleBorrarError = async () => {
+    await cleanError();
+    await setTimer(0);
     navigate("/");
   };
 
@@ -35,32 +35,51 @@ export const Errores = () => {
 
   return (
     <section className="page-section">
-      <Container className="container">
-        <Row style={{ marginTop: "20%", textAlign: "center" }}>
-          <Col>
+      <Container
+        className="container"
+        style={{ textAlign: "center", width: "600px" }}
+      >
+        <Row style={{ marginTop: "20%", textAlign: "center", width: "700px" }}>
+          {" "}
+          <Alert
+            size="sm"
+            className="monserrat"
+            style={{
+              padding: "1%",
+              marginTop: "1%",
+              color: "#000",
+              fontSize: "10pt",
+              wordWrap: "break-word",
+              backgroundColor: "#eeeeee",
+              border: "1px solid #ccc",
+              width: "600px",
+              alignItems: "center",
+              justifyContent: "center",
+              alignContent: "center",
+              textAlign: "center",
+            }}
+          >
             <span
               className="hometitlelight"
-              style={{ fontSize: "16pt", color: "#000", fontWeight: "300" }}>
-              <i
-                className="bi bi-bell"
-                style={{ fontSize: "25pt", color: "red" }}></i>
-              {"  "}Se ha producido un error
+              style={{ fontSize: "14pt", color: "#000", fontWeight: "300" }}
+            >
+              Se ha producido un error
             </span>
-            {errores && errores.status}
 
-            {"  "}
             <Button
-              outline
+              outline="true"
               onClick={() => handleInfo()}
               size="sm"
-              className="btn monserrat btnTable"
-              style={{ fontWeight: "300", marginLeft: "2%" }}
-              aria-pressed="true">
+              className="btn btn-custom monserrat"
+              aria-pressed="true"
+              style={{ marginLeft: "5%", fontSize: "9pt !important" }}
+            >
               <i className="bi bi-plus-lg" style={{ fontSize: "9pt" }} />
               {"  "}Info
             </Button>
-          </Col>
+          </Alert>
         </Row>
+
         <Row>
           <Col style={{ marginTop: "0.5%", textAlign: "center" }}>
             {moreInfo && (
@@ -75,16 +94,25 @@ export const Errores = () => {
                   color: "#000",
                   fontSize: "10pt",
                   wordWrap: "break-word",
-                }}>
-                {JSON.stringify(errores)}
+                }}
+              >
+                {/* {errores && errores.status && "   Status: " + errores.status}
+                {errores &&
+                  errores.statusText &&
+                  "   Message: " + errores.statusText}
+                {errores && errores.url && "   URL: " + errores.url} */}
+                {!errores &&
+                  "Error desconocido, por favor comunique al adminsitrador"}
+                {errores && JSON.stringify(errores)}
               </Alert>
             )}
             <br></br>
             <Button
               size="sm"
               aria-pressed="true"
-              className="btn monserrat"
-              onClick={() => handleBorrarError()}>
+              className="btn btn-custom monserrat"
+              onClick={() => handleBorrarError()}
+            >
               {" "}
               Continuar
             </Button>

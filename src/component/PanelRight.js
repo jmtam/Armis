@@ -1,13 +1,18 @@
+/* eslint-disable array-callback-return */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useState, useEffect } from "react";
 import { GlobalContext } from "../context/GlobalContext";
-import * as moment from "moment";
-import "moment/locale/es";
+// import * as moment from "moment";
+// import "moment/locale/es";
 import DataTable from "react-data-table-component";
 import copy from "copy-to-clipboard";
-import { Loading } from "./Loading";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Form from "react-bootstrap/Form";
+import { tableStyle } from "../services/helpers";
+import downloadIcon from "../assets/img/download.gif";
+import LogEditor from "./Editor";
+import { Container, Button } from "react-bootstrap";
 
 export const PanelRight = () => {
   const {
@@ -16,30 +21,45 @@ export const PanelRight = () => {
     timer,
     prestadorId,
     getPanelRightLogs,
-    timerSeconds,
+    //timerSeconds,
+    prestadores,
+    donwloadingId,
+    getPanelRightLogById,
+    // lastLogIndex,
+    showlogs,
+    setShowLogs,
+    // donwloadingData,
+    // clearDownloadLogData,
   } = useContext(GlobalContext);
 
+  //const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const [data, setData] = useState([]);
+  const [integracion, setintegracion] = useState([]);
+  const [showEditor, setShowEditor] = useState(false);
+  const [editorData, setEditorData] = useState();
+  //const [isLoading, setIsLoading] = useState(false);
+  const [selectedRow, setSelectedRow] = useState();
+
   useEffect(() => {
-    let interval = null;
-    if (timer) {
-      interval = setInterval(async () => {
+    async function init() {
+      if (timer === 1 && showlogs) {
+        // if (prestadorId) {
+        //   await sleep(timerSeconds);
+        // }
+
+        if (prestadorId && prestadores) {
+          var obj = prestadores.filter((p) => p.id === prestadorId);
+          //alert(obj[0].integracion);
+          setintegracion(obj[0].integracion + "  # " + prestadorId);
+        }
+        //setIsLoading(true);
         await getPanelRightLogs(prestadorId);
-        console.log(
-          moment(new Date()).format("DD/MM/YYYY HH:MM").toString() +
-            "START PRESTADORES timer" +
-            timer
-        );
-      }, timerSeconds);
-    } else {
-      clearInterval(interval);
-      console.log(
-        moment(new Date()).format("DD/MM/YYYY HH:MM").toString() +
-          "STOP PRESTADORES timer" +
-          timer
-      );
+        //setIsLoading(false);
+      }
     }
-    return () => clearInterval(interval);
-  }, [timer, prestadorId, timerSeconds]);
+    init();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prestadorId, timer, prestadores]);
 
   useEffect(() => {
     if (logs) {
@@ -48,45 +68,108 @@ export const PanelRight = () => {
   }, [logs]);
 
   const columns = [
+    // {
+    //   name: "Id",
+    //   selector: (row) => row.id,
+    //   sortable: true,
+    //   //center: true,
+    //   width: "80px",
+    //   compact: "true",
+    //   //right: true,
+    //   cell: (row) =>
+    //     donwloadingId === row.id ? (
+    //       <div style={{ textAlign: "right" }}>
+    //         {/* <i
+    //           className="bi bi-cloud-download"
+    //           style={{ fontSize: "10pt", color: "green", paddingRight: 5 }}
+    //         /> */}
+    //         <img src={downloadIcon} alt="" width="30" />
+    //         {row.id}
+    //       </div>
+    //     ) : (
+    //       <div style={{ textAlign: "right" }}>{row.id}</div>
+    //     ),
+    // },
     {
-      name: "Id",
-      selector: (row) => row.id,
-      width: "80px",
-      compact: "true",
-    },
-    {
-      name: "Fecha",
+      name: "    Fecha",
       selector: (row) => row.fecha,
       sortable: true,
       compact: "true",
-      width: "100px",
+      width: "95px",
+      cell: (row) =>
+        donwloadingId === row.id ? (
+          <img src={downloadIcon} alt="" width="30" />
+        ) : (
+          row.fecha
+        ),
+      style: {
+        paddingLeft: 5,
+      },
     },
     {
       name: "Dir",
       selector: (row) => row.dir,
       sortable: true,
       compact: "true",
-      width: "40px",
+      width: "33px",
+      style: {
+        justifyContent: "center",
+        paddingRight: 5,
+      },
     },
+    {
+      name: "Bytes",
+      selector: (row) => row.bytes,
+      sortable: true,
+      compact: "true",
+      width: "55px",
+      style: {
+        justifyContent: "right",
+        paddingRight: 5,
+      },
+    },
+
     {
       name: "Data",
       selector: (row) => row.data,
-      sortable: true,
+
       compact: "true",
+
+      style: {
+        paddingLeft: 5,
+      },
     },
   ];
 
-  const handleChange = ({ selectedRows }) => {
-    if (typeof selectedRows[0] !== "undefined") {
-      copy(JSON.stringify(selectedRows[0]));
-      setTimer(0);
+  const handleChangeRowCLicked = async (row, event) => {
+    if (donwloadingId === null || !donwloadingId) {
+      if (row.truncated === "true" || row.truncated === true) {
+        await getPanelRightLogById(prestadorId, row.id);
+      } else {
+        copy(JSON.stringify(row));
+      }
+      setSelectedRow(row.id);
+    } else {
+      setSelectedRow(donwloadingId);
+      //alert("HAy un proceso de descarga aguarde a que finalice");
     }
   };
 
-  const [data, setData] = useState([]);
+  const handleChangeRowDOubleCLicked = async (row, event) => {
+    await navigator.clipboard.readText().then((clipText) => {
+      setEditorData(clipText);
+      setShowEditor(true);
+    });
+  };
+
+  // const resetSearch = (e) => {
+  //   e.preventDefault();
+  //   // e.target.value = "";
+  //   // setTimer(1);
+  // };
+
   const handleSearch = async (e) => {
-    if (e.target.value === "") setTimer(1);
-    else setTimer(0);
+    if (e.target.value.length > 2) setTimer(0);
 
     var searchData = logs.filter((item) => {
       if (
@@ -110,53 +193,98 @@ export const PanelRight = () => {
       }
     });
 
+    if (e.target.value.length === 0) setTimer(1);
+
     setData(searchData);
   };
 
   return (
-    <div className="panelRight">
+    <Container
+      fluid
+      style={{
+        marginTop: "0",
+        minHeight: "100%",
+        padding: 0,
+        margin: 0,
+      }}
+    >
       {logs && (
-        <Row className="rowSearch">
-          <Col lg={"6"} className="text14">
-            Logs
-          </Col>
-          <Col lg={"6"} className="text12">
-            <Form.Control
-              className="formInput"
-              type="search"
-              placeholder="Buscar ..."
-              onChange={handleSearch}
-              onBlur={() => setTimer(1)}
-            />
-          </Col>
-        </Row>
+        <>
+          <Row
+            className="rowSearch"
+            style={{
+              marginBottom: "1.5%",
+              height: 37,
+            }}
+          >
+            <Col
+              xs={6}
+              md={6}
+              lg={6}
+              className="text14"
+              style={{ padding: 0, margin: 0 }}
+            >
+              Logs de {integracion}
+              {/* {"  -  "} Last: {lastLogIndex} */}
+              {/* {donwloadingId && " / Downloading:" + donwloadingId} */}
+            </Col>
+            <Col style={{ padding: 0, margin: 0 }} xs={5} md={5} lg={5}>
+              <Form.Control
+                name="search"
+                className="formInput"
+                type="search"
+                placeholder="Buscar ..."
+                onChange={handleSearch}
+                //onBlur={resetSearch}
+              />
+            </Col>
+
+            <Col xs={1} md={1} lg={1} style={{ justifyItems: "end" }}>
+              <Button
+                className={"btn btn-custom-close"}
+                onClick={() => setShowLogs(0)}
+              >
+                <i
+                  className="bi bi-x"
+                  style={{ fontSize: "16pt", color: "#fff" }}
+                ></i>
+              </Button>
+            </Col>
+          </Row>
+
+          <Row style={{ padding: 0, margin: 0 }}>
+            <Col style={{ padding: 0, margin: 0 }}>
+              <DataTable
+                columns={columns}
+                data={data}
+                fixedHeader={true}
+                selectableRowsComponent={"null"}
+                selectableRowsSingle
+                selectableRowsHighlight
+                defaultSortFieldId={"id"}
+                onRowDoubleClicked={handleChangeRowDOubleCLicked}
+                defaultSortAsc={false}
+                onRowClicked={handleChangeRowCLicked}
+                highlightOnHover
+                dense
+                selectableRowSelected={(row) => row.id === selectedRow}
+                responsive
+                pointerOnHover
+                noDataComponent="No hay registros disponibles"
+                customStyles={tableStyle}
+              />
+            </Col>
+          </Row>
+        </>
       )}
 
-      {logs && (
-        <DataTable
-          columns={columns}
-          data={data}
-          fixedHeader
-          //title="Integraciones"
-          pagination
-          paginationPerPage={15}
-          //expandableRows
-          //expandableRowsComponent={ExpandedComponent} // expandir columnas
-          //paginationPerPage={2}
-          selectableRows
-          onSelectedRowsChange={handleChange}
-          selectableRowsSingle
-          selectableRowsHighlight
-          // customStyles={customStyles} //Cambiar styles custom
-          highlightOnHover
-          fixedHeaderScrollHeight
-          dense
-          striped={true}
-
-          //theme="solarized" //Cambia el theme
-          //conditionalRowStyles={conditionalRowStyles}
+      {showEditor && (
+        <LogEditor
+          data={editorData}
+          setShowEditor={setShowEditor}
+          showEditor={showEditor}
         />
       )}
-    </div>
+    </Container>
   );
 };

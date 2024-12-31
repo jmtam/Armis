@@ -5,12 +5,12 @@ import { GlobalContext } from "../context/GlobalContext";
 import * as moment from "moment";
 import "moment/locale/es";
 import DataTable from "react-data-table-component"; //createTheme
-import { Loading } from "./Loading";
+// import { Loading } from "./Loading";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Form from "react-bootstrap/Form";
-
-//const rowSelectCritera = (row) => row.id === 1;
+import { tableStyle } from "../services/helpers";
+import { Container } from "react-bootstrap";
 
 export const PanelLeft = () => {
   const {
@@ -18,180 +18,188 @@ export const PanelLeft = () => {
     prestadores,
     timer,
     setTimer,
-    setTimerDate,
+    //setTimerDate,
     timerSeconds,
     setPrestadorId,
     prestadorId,
     setClearLogs,
+    clearLogLastIndex,
+
+    reintentFetch,
+    reintentFetchMseg,
   } = useContext(GlobalContext);
 
-  // const [rowSelected, setRowSelected] = useState(1);
+  const [selectedRow, setSelectedRow] = useState();
+  const [data, setData] = useState([]);
+  const [searching, setSearching] = useState(false);
 
-  // const [clearRows, setclearRows] = useState(false);
+  useEffect(() => {
+    async function init() {
+      if (!prestadorId) {
+        setSelectedRow(1);
+        await setPrestadorId(1);
+      }
+    }
 
-  // createTheme(
-  //   "solarized",
-  //   {
-  //     text: {
-  //       primary: "#268bd2",
-  //       secondary: "#2aa198",
-  //     },
-  //     background: {
-  //       default: "#002b36",
-  //     },
-  //     context: {
-  //       background: "#cb4b16",
-  //       text: "#FFFFFF",
-  //     },
-  //     divider: {
-  //       default: "#073642",
-  //     },
-  //     button: {
-  //       default: "#2aa198",
-  //       hover: "rgba(0,0,0,.08)",
-  //       focus: "rgba(255,255,255,.12)",
-  //       disabled: "rgba(255, 255, 255, .34)",
-  //     },
-  //     sortFocus: {
-  //       default: "#2aa198",
-  //     },
-  //   },
-  //   "dark"
-  // );
-
-  // useEffect(() => {
-  //   async function init() {
-  //     //setId(prestadorId);
-  //     // if (prestadorId) await getPanelRightLogs(prestadorId);
-  //     // else setPrestadorId(1);
-  //   }
-
-  //   init();
-  //   //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [prestadorId]);
+    init();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (prestadores) {
-      setData(prestadores);
+      if (!searching) setData(prestadores);
     }
-  }, [prestadores]);
+  }, [prestadores, searching]);
+
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  useEffect(() => {
+    async function init() {
+      if (timer === 1) {
+        if (prestadores) {
+          await sleep(timerSeconds);
+        }
+        await getPanelLeftPrestadores();
+        // setTimerDate(moment().format("HH:mm:ss").toString());
+      }
+    }
+    init();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prestadores, timer]);
 
   useEffect(() => {
     let interval = null;
-    if (timer) {
+    if (reintentFetch && timer === 1) {
       interval = setInterval(async () => {
         await getPanelLeftPrestadores();
-
-        //        if (prestadorId) await getPanelRightLogs(prestadorId);
-        // else setPrestadorId(1);
-
-        setTimerDate(moment().format("DD/MM/YY HH:mm:ss").toString());
-
         console.log(
-          moment().format("DD/MM/YY HH:mm:ss").toString() +
-            " GET API CALL " +
-            timer
+          "REINTENTO ACTIVO  " +
+            moment().format("HH:mm:ss").toString() +
+            " Timer" +
+            JSON.stringify(timer)
         );
-      }, timerSeconds);
+      }, reintentFetchMseg);
     } else {
       clearInterval(interval);
       console.log(
-        moment(new Date()).format("DD/MM/YY HH:mm:ss").toString() +
-          " STOP API CALL " +
-          timer
+        "REINTENTO DESACTIVADO " + moment().format("HH:mm:ss").toString()
       );
     }
     return () => clearInterval(interval);
-  }, [timer, prestadorId, timerSeconds]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reintentFetch, reintentFetchMseg]);
 
   const columns = [
     {
-      name: "Id",
+      name: "  Id",
       selector: (row) => row.id,
       sortable: true,
-      //center: true,
-      width: "40px",
-      //right: true,
-
-      //grow: 1,
+      width: "50px",
       compact: "true",
-      // style: {
-      //   backgroundColor: "rgba(187, 204, 221, 1)",
-      // },
+      style: {
+        justifyContent: "center",
+        paddingRight: 5,
+      },
     },
     {
-      name: "Prestador",
+      name: "Integración",
       selector: (row) => row.integracion,
       sortable: true,
-      //grow: 3,
       compact: "true",
-      width: "200px",
+      width: "150px",
+
+      style: {
+        paddingLeft: 5,
+      },
+    },
+
+    {
+      name: "Dom",
+      selector: (row) => row.dominios,
+      sortable: true,
+      compact: "true",
+      //center: true,
+      width: "50px",
+      style: {
+        justifyContent: "right",
+        paddingRight: 5,
+      },
+    },
+
+    {
+      name: "Even",
+      selector: (row) => row.eventos,
+      sortable: true,
+      compact: "true",
+      width: "50px",
+      style: {
+        justifyContent: "right",
+        paddingRight: 5,
+      },
+      //center: true,
+    },
+
+    {
+      name: "Acep",
+      selector: (row) => row.aceptados,
+      sortable: true,
+      compact: "true",
+      width: "50px",
+      style: {
+        justifyContent: "right",
+        paddingRight: 5,
+      },
+    },
+
+    {
+      name: "Rech",
+      selector: (row) => row.rechazados,
+      sortable: true,
+      compact: "true",
+      width: "50px",
+      style: {
+        justifyContent: "right",
+        paddingRight: 5,
+      },
     },
     {
       name: "Estado",
       selector: (row) => row.estado,
-      sortable: true,
-      //grow: 8,
       compact: "true",
+      style: {
+        paddingLeft: 5,
+      },
+
+      // cell: (row) => {
+      //   if (row.id === 2) {
+      //     return (
+      //       <div>
+      //         <i
+      //           className="bi bi-exclamation-triangle-fill"
+      //           style={{ fontSize: "12pt", color: "orange", paddingRight: 5 }}
+      //         />
+      //         {row.estado}
+      //       </div>
+      //     );
+      //   } else if (row.id === 3) {
+      //     return (
+      //       <div>
+      //         <i
+      //           className="bi bi-exclamation-triangle-fill"
+      //           style={{ fontSize: "12pt", color: "red", paddingRight: 5 }}
+      //         />
+      //         {row.estado}
+      //       </div>
+      //     );
+      //   } else {
+      //     return row.estado;
+      //   }
+      // },
     },
   ];
 
-  //   {
-  //     id: 1,
-  //     fullName: "John Doe",
-  //     height: "1.75m",
-  //     weight: "89kg",
-  //   },
-  //   {
-  //     id: 2,
-  //     fullName: "Jane Doe",
-  //     height: "1.64m",
-  //     weight: "55kg",
-  //   },
-  //   {
-  //     id: 3,
-  //     fullName: "Sheera Maine",
-  //     height: "1.69m",
-  //     weight: "74kg",
-  //   },
-  // ];
-
-  // const customStyles = {
-  //   header: {
-  //     style: {
-  //       minHeight: "56px",
-  //     },
-  //   },
-  //   headRow: {
-  //     style: {
-  //       borderTopStyle: "solid",
-  //       borderTopWidth: "1px",
-  //       //borderTopColor: defaultThemes.default.divider.default,
-  //     },
-  //   },
-  //   headCells: {
-  //     style: {
-  //       "&:not(:last-of-type)": {
-  //         borderRightStyle: "solid",
-  //         borderRightWidth: "1px",
-  //         //borderRightColor: defaultThemes.default.divider.default,
-  //       },
-  //     },
-  //   },
-  //   cells: {
-  //     style: {
-  //       "&:not(:last-of-type)": {
-  //         borderRightStyle: "solid",
-  //         borderRightWidth: "1px",
-  //         //borderRightColor: defaultThemes.default.divider.default,
-  //       },
-  //     },
-  //   },
-  // };
-
   // const conditionalRowStyles = [
   //   {
-  //     when: (row) => row.id < 300,
+  //     when: (row) => row.id === 1,
   //     style: {
   //       backgroundColor: "rgba(63, 195, 128, 0.9)",
   //       color: "white",
@@ -201,19 +209,19 @@ export const PanelLeft = () => {
   //     },
   //   },
   //   {
-  //     when: (row) => row.calories >= 300 && row.calories < 400,
+  //     when: (row) => row.id >= 1 && row.id < 2,
   //     style: {
-  //       backgroundColor: "rgba(248, 148, 6, 0.9)",
-  //       color: "white",
+  //       backgroundColor: "rgba(248, 248, 6, 1)",
+  //       color: "#000",
   //       "&:hover": {
   //         cursor: "pointer",
   //       },
   //     },
   //   },
   //   {
-  //     when: (row) => row.calories >= 400,
+  //     when: (row) => row.id >= 2,
   //     style: {
-  //       backgroundColor: "rgba(242, 38, 19, 0.9)",
+  //       backgroundColor: "rgb(247, 31, 11)",
   //       color: "white",
   //       "&:hover": {
   //         cursor: "not-allowed",
@@ -221,114 +229,17 @@ export const PanelLeft = () => {
   //     },
   //   },
   // ];
-  const handleChange = async ({ selectedRows }) => {
-    if (typeof selectedRows[0] !== "undefined") {
-      await setPrestadorId(selectedRows[0].id);
-      if (timer === 0) setTimer(1);
-      setClearLogs();
 
-      //alert("Selected Rows: " + JSON.stringify(selectedRows[0].id));
-    }
-  };
-
-  //   {
-  //     id: 1,
-  //     fullName: "John Doe",
-  //     height: "1.75m",
-  //     weight: "89kg",
-  //   },
-  //   {
-  //     id: 2,
-  //     fullName: "Jane Doe",
-  //     height: "1.64m",
-  //     weight: "55kg",
-  //   },
-  //   {
-  //     id: 3,
-  //     fullName: "Sheera Maine",
-  //     height: "1.69m",
-  //     weight: "74kg",
-  //   },
-  // ];
-
-  // const customStyles = {
-  //   header: {
-  //     style: {
-  //       minHeight: "56px",
-  //     },
-  //   },
-  //   headRow: {
-  //     style: {
-  //       borderTopStyle: "solid",
-  //       borderTopWidth: "1px",
-  //       //borderTopColor: defaultThemes.default.divider.default,
-  //     },
-  //   },
-  //   headCells: {
-  //     style: {
-  //       "&:not(:last-of-type)": {
-  //         borderRightStyle: "solid",
-  //         borderRightWidth: "1px",
-  //         //borderRightColor: defaultThemes.default.divider.default,
-  //       },
-  //     },
-  //   },
-  //   cells: {
-  //     style: {
-  //       "&:not(:last-of-type)": {
-  //         borderRightStyle: "solid",
-  //         borderRightWidth: "1px",
-  //         //borderRightColor: defaultThemes.default.divider.default,
-  //       },
-  //     },
-  //   },
-  // };
-
-  // const conditionalRowStyles = [
-  //   {
-  //     when: (row) => row.id < 300,
-  //     style: {
-  //       backgroundColor: "rgba(63, 195, 128, 0.9)",
-  //       color: "white",
-  //       "&:hover": {
-  //         cursor: "pointer",
-  //       },
-  //     },
-  //   },
-  //   {
-  //     when: (row) => row.calories >= 300 && row.calories < 400,
-  //     style: {
-  //       backgroundColor: "rgba(248, 148, 6, 0.9)",
-  //       color: "white",
-  //       "&:hover": {
-  //         cursor: "pointer",
-  //       },
-  //     },
-  //   },
-  //   {
-  //     when: (row) => row.calories >= 400,
-  //     style: {
-  //       backgroundColor: "rgba(242, 38, 19, 0.9)",
-  //       color: "white",
-  //       "&:hover": {
-  //         cursor: "not-allowed",
-  //       },
-  //     },
-  //   },
-  // ];
   const handleChangeRowCLicked = async (row, event) => {
+    await setClearLogs();
+    await clearLogLastIndex();
     await setPrestadorId(row.id);
+    setSelectedRow(row.id);
+    if (timer === 0) setTimer(1);
   };
-
-  const [data, setData] = useState([]);
 
   const handleSearch = async (e) => {
-    // setTitle(e.target.value);
-    // alert(JSON.stringify(e.target.value));
-
-    if (e.target.value === "") setTimer(1);
-    else setTimer(0);
-
+    if (e.target.value.length > 1) setSearching(true);
     var searchData = prestadores.filter((item) => {
       if (
         item.id.toString().toLowerCase().includes(e.target.value.toLowerCase())
@@ -351,65 +262,79 @@ export const PanelLeft = () => {
     setData(searchData);
   };
 
-  // const toggleCleared = ({ selectedRows }) => {
-  //   alert("llego");
-  // };
-  // const rowSelectCritera = (row) => row.id === prestadorId;
-  //const ExpandedComponent = ({ data }) => <pre>{JSON.stringify(data, null, 2)}</pre>;
-  return (
-    <div className="panelLeft">
-      {prestadorId && prestadores && (
-        <Row className="rowSearch">
-          <Col lg={"6"} className="text14">
-            {"Prestador # " + prestadorId}
-          </Col>
-          <Col lg={"6"} className="text12">
-            <Form.Control
-              className="formInput"
-              type="search"
-              placeholder="Buscar ..."
-              onChange={handleSearch}
-            />
-          </Col>
-        </Row>
-      )}
+  const resetSearch = async (e) => {
+    e.preventDefault();
+    e.target.value = "";
+    setSearching(false);
+  };
 
-      {/* {JSON.stringify(prestadores)} */}
-      {prestadores ? (
-        <DataTable
-          // className="tableData"
-          columns={columns}
-          data={data}
-          fixedHeader
-          //title="Integraciones"
-          pagination
-          //expandableRows
-          //expandableRowsComponent={ExpandedComponent} // expandir columnas
-          //paginationPerPage={2}
-          selectableRows
-          onSelectedRowsChange={handleChange}
-          //onRowClicked={handleChange}
-          selectableRowsSingle
-          selectableRowsHighlight
-          onRowClicked={handleChangeRowCLicked}
-          // customStyles={customStyles} //Cambiar styles custom
-          highlightOnHover
-          fixedHeaderScrollHeight
-          dense
-          //progressPending={pending}
-          selectableRowSelected={!prestadorId ? (row) => row.id === 1 : null}
-          //clearSelectedRows={clearRows}
-          setRowSelec
-          //theme="solarized" //Cambia el theme
-          //conditionalRowStyles={conditionalRowStyles}
-        />
-      ) : (
-        <Loading />
+  return (
+    <Container
+      fluid
+      style={{
+        marginTop: "0%",
+        padding: 0,
+        margin: 0,
+      }}
+    >
+      {prestadores && (
+        <>
+          <Row
+            className="rowSearch"
+            style={{
+              marginBottom: "1.5%",
+              height: 37,
+            }}
+          >
+            <Col className="text14" style={{ padding: 0, margin: 0 }}>
+              Integración # {prestadorId && prestadorId}
+            </Col>
+            <Col>
+              <Form.Control
+                className="formInput"
+                type="search"
+                name="search"
+                placeholder="Buscar ..."
+                onChange={handleSearch}
+                onBlur={resetSearch}
+                //onFocus={() => setSearching(false)}
+              />
+            </Col>
+          </Row>
+          <Row style={{ padding: 0, margin: 0 }}>
+            <Col style={{ padding: 0, margin: 0 }}>
+              <DataTable
+                columns={columns}
+                data={data}
+                fixedHeader={true}
+                selectableRowsComponent={"null"}
+                selectableRowsSingle
+                selectableRowsHighlight
+                onRowClicked={handleChangeRowCLicked}
+                //conditionalRowStyles={conditionalRowStyles}
+                highlightOnHover
+                dense
+                selectableRowSelected={(row) => row.id === selectedRow}
+                responsive
+                pointerOnHover
+                noDataComponent="No hay registros disponibles"
+                customStyles={tableStyle}
+              />
+            </Col>
+          </Row>
+        </>
       )}
-    </div>
+    </Container>
   );
 };
 
-// https://stackoverflow.com/questions/36881022/onrowclick-for-react-bootstrap-table
-// https://www.youtube.com/watch?v=OR0qIT96xJ8
-// https://react-data-table-component.netlify.app/?path=/docs/getting-started-examples--docs
+// const handleChange = async ({ selectedRows }) => {
+//   if (typeof selectedRows[0] !== "undefined") {
+//     await setPrestadorId(selectedRows[0].id);
+//     setSelectedRow(selectedRows[0].id);
+//     if (timer === 0) setTimer(1);
+//     setClearLogs();
+
+//     //alert("Selected Rows: " + JSON.stringify(selectedRows[0].id));
+//   }
+// };
