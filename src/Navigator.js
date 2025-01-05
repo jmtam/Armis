@@ -6,10 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { GlobalContext } from "./context/GlobalContext";
 import { Login } from "./component/Login";
-import { Footer } from "./component/Footer";
-// import LogEditor from "./component/Editor";
-// import { Carros } from "./component/Carros";
-
+//import { Footer } from "./component/Footer";
 // import { Notificaciones } from "./component/Notificaciones";
 // import Notification from "./Notification";
 
@@ -35,8 +32,6 @@ export const Navigator = () => {
               <Route path="/" element={<Home />} />
               <Route path="error" element={<Errores />} />
               {/* <Route path="logEditor" element={<LogEditor />} /> */}
-              {/* <Route path="/carros" element={<Carros />} /> */}
-
               {/* <Route path="/notificaciones" element={<Notificaciones />} /> */}
             </>
           ) : (

@@ -24,6 +24,7 @@ export const PanelLeft = () => {
     prestadorId,
     setClearLogs,
     clearLogLastIndex,
+    token,
 
     reintentFetch,
     reintentFetchMseg,
@@ -51,13 +52,13 @@ export const PanelLeft = () => {
     }
   }, [prestadores, searching]);
 
-  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  //const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   useEffect(() => {
     async function init() {
-      if (timer === 1) {
-        if (prestadores) {
-          await sleep(timerSeconds);
-        }
+      if (timer === 1 && token) {
+        // if (prestadores) {
+        //   await sleep(timerSeconds);
+        // }
         await getPanelLeftPrestadores();
         // setTimerDate(moment().format("HH:mm:ss").toString());
       }
@@ -68,14 +69,16 @@ export const PanelLeft = () => {
 
   useEffect(() => {
     let interval = null;
-    if (reintentFetch && timer === 1) {
+    if (reintentFetch) {
       interval = setInterval(async () => {
         await getPanelLeftPrestadores();
         console.log(
           "REINTENTO ACTIVO  " +
             moment().format("HH:mm:ss").toString() +
-            " Timer" +
-            JSON.stringify(timer)
+            " Timer encendido " +
+            timer +
+            " Tiempo de reintento " +
+            reintentFetchMseg
         );
       }, reintentFetchMseg);
     } else {
@@ -277,52 +280,51 @@ export const PanelLeft = () => {
         margin: 0,
       }}
     >
+      <Row
+        className="rowSearch"
+        style={{
+          marginBottom: "1.5%",
+          height: 37,
+        }}
+      >
+        <Col className="text14" style={{ padding: 0, margin: 0 }}>
+          Integración # {prestadorId && prestadorId}
+        </Col>
+        <Col>
+          <Form.Control
+            className="formInput"
+            type="search"
+            name="search"
+            placeholder="Buscar ..."
+            onChange={handleSearch}
+            onBlur={resetSearch}
+            //onFocus={() => setSearching(false)}
+          />
+        </Col>
+      </Row>
       {prestadores && (
-        <>
-          <Row
-            className="rowSearch"
-            style={{
-              marginBottom: "1.5%",
-              height: 37,
-            }}
-          >
-            <Col className="text14" style={{ padding: 0, margin: 0 }}>
-              Integración # {prestadorId && prestadorId}
-            </Col>
-            <Col>
-              <Form.Control
-                className="formInput"
-                type="search"
-                name="search"
-                placeholder="Buscar ..."
-                onChange={handleSearch}
-                onBlur={resetSearch}
-                //onFocus={() => setSearching(false)}
-              />
-            </Col>
-          </Row>
-          <Row style={{ padding: 0, margin: 0 }}>
-            <Col style={{ padding: 0, margin: 0 }}>
-              <DataTable
-                columns={columns}
-                data={data}
-                fixedHeader={true}
-                selectableRowsComponent={"null"}
-                selectableRowsSingle
-                selectableRowsHighlight
-                onRowClicked={handleChangeRowCLicked}
-                //conditionalRowStyles={conditionalRowStyles}
-                highlightOnHover
-                dense
-                selectableRowSelected={(row) => row.id === selectedRow}
-                responsive
-                pointerOnHover
-                noDataComponent="No hay registros disponibles"
-                customStyles={tableStyle}
-              />
-            </Col>
-          </Row>
-        </>
+        <Row style={{ padding: 0, margin: 0 }}>
+          <Col style={{ padding: 0, margin: 0 }}>
+            <DataTable
+              persistTableHead={true}
+              columns={columns}
+              data={data}
+              fixedHeader={true}
+              selectableRowsComponent={"null"}
+              selectableRowsSingle
+              selectableRowsHighlight
+              onRowClicked={handleChangeRowCLicked}
+              //conditionalRowStyles={conditionalRowStyles}
+              highlightOnHover
+              dense
+              selectableRowSelected={(row) => row.id === selectedRow}
+              responsive
+              pointerOnHover
+              noDataComponent="No hay registros disponibles"
+              customStyles={tableStyle}
+            />
+          </Col>
+        </Row>
       )}
     </Container>
   );

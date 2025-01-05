@@ -27,7 +27,9 @@ export const PanelRight = () => {
     getPanelRightLogById,
     // lastLogIndex,
     showlogs,
+    token,
     setShowLogs,
+    reintentFetch,
     // donwloadingData,
     // clearDownloadLogData,
   } = useContext(GlobalContext);
@@ -35,14 +37,14 @@ export const PanelRight = () => {
   //const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const [data, setData] = useState([]);
   const [integracion, setintegracion] = useState([]);
-  const [showEditor, setShowEditor] = useState(false);
-  const [editorData, setEditorData] = useState();
+  // const [showEditor, setShowEditor] = useState(false);
+  // const [editorData, setEditorData] = useState();
   //const [isLoading, setIsLoading] = useState(false);
   const [selectedRow, setSelectedRow] = useState();
 
   useEffect(() => {
     async function init() {
-      if (timer === 1 && showlogs) {
+      if (timer === 1 && showlogs && token && !reintentFetch) {
         // if (prestadorId) {
         //   await sleep(timerSeconds);
         // }
@@ -155,12 +157,14 @@ export const PanelRight = () => {
     }
   };
 
-  const handleChangeRowDOubleCLicked = async (row, event) => {
-    await navigator.clipboard.readText().then((clipText) => {
-      setEditorData(clipText);
-      setShowEditor(true);
-    });
-  };
+  // const handleChangeRowDOubleCLicked = async (row, event) => {
+  //   //Insecure origins treated as secure   flags del chrome
+
+  //   await navigator.clipboard.readText().then((clipText) => {
+  //     setEditorData(clipText);
+  //     setShowEditor(true);
+  //   });
+  // };
 
   // const resetSearch = (e) => {
   //   e.preventDefault();
@@ -208,83 +212,82 @@ export const PanelRight = () => {
         margin: 0,
       }}
     >
-      {logs && (
-        <>
-          <Row
-            className="rowSearch"
-            style={{
-              marginBottom: "1.5%",
-              height: 37,
-            }}
+      <Row
+        className="rowSearch"
+        style={{
+          marginBottom: "1.5%",
+          height: 37,
+        }}
+      >
+        <Col
+          xs={6}
+          md={6}
+          lg={6}
+          className="text14"
+          style={{ padding: 0, margin: 0 }}
+        >
+          Logs de {integracion}
+          {/* {"  -  "} Last: {lastLogIndex} */}
+          {/* {donwloadingId && " / Downloading:" + donwloadingId} */}
+        </Col>
+        <Col style={{ padding: 0, margin: 0 }} xs={5} md={5} lg={5}>
+          <Form.Control
+            name="search"
+            className="formInput"
+            type="search"
+            placeholder="Buscar ..."
+            onChange={handleSearch}
+            //onBlur={resetSearch}
+          />
+        </Col>
+
+        <Col xs={1} md={1} lg={1} style={{ justifyItems: "end" }}>
+          <Button
+            className={"btn btn-custom-close"}
+            onClick={() => setShowLogs(0)}
           >
-            <Col
-              xs={6}
-              md={6}
-              lg={6}
-              className="text14"
-              style={{ padding: 0, margin: 0 }}
-            >
-              Logs de {integracion}
-              {/* {"  -  "} Last: {lastLogIndex} */}
-              {/* {donwloadingId && " / Downloading:" + donwloadingId} */}
-            </Col>
-            <Col style={{ padding: 0, margin: 0 }} xs={5} md={5} lg={5}>
-              <Form.Control
-                name="search"
-                className="formInput"
-                type="search"
-                placeholder="Buscar ..."
-                onChange={handleSearch}
-                //onBlur={resetSearch}
-              />
-            </Col>
-
-            <Col xs={1} md={1} lg={1} style={{ justifyItems: "end" }}>
-              <Button
-                className={"btn btn-custom-close"}
-                onClick={() => setShowLogs(0)}
-              >
-                <i
-                  className="bi bi-x"
-                  style={{ fontSize: "16pt", color: "#fff" }}
-                ></i>
-              </Button>
-            </Col>
-          </Row>
-
-          <Row style={{ padding: 0, margin: 0 }}>
-            <Col style={{ padding: 0, margin: 0 }}>
-              <DataTable
-                columns={columns}
-                data={data}
-                fixedHeader={true}
-                selectableRowsComponent={"null"}
-                selectableRowsSingle
-                selectableRowsHighlight
-                defaultSortFieldId={"id"}
-                onRowDoubleClicked={handleChangeRowDOubleCLicked}
-                defaultSortAsc={false}
-                onRowClicked={handleChangeRowCLicked}
-                highlightOnHover
-                dense
-                selectableRowSelected={(row) => row.id === selectedRow}
-                responsive
-                pointerOnHover
-                noDataComponent="No hay registros disponibles"
-                customStyles={tableStyle}
-              />
-            </Col>
-          </Row>
-        </>
+            <i
+              className="bi bi-chevron-right"
+              style={{ fontSize: "12pt", color: "#fff" }}
+            ></i>
+          </Button>
+        </Col>
+      </Row>
+      {logs && (
+        <Row style={{ padding: 0, margin: 0 }}>
+          <Col style={{ padding: 0, margin: 0 }}>
+            <DataTable
+              columns={columns}
+              data={data}
+              fixedHeader={true}
+              persistTableHead={true}
+              // progressPending={true}
+              selectableRowsComponent={"null"}
+              selectableRowsSingle
+              selectableRowsHighlight
+              defaultSortFieldId={"id"}
+              //onRowDoubleClicked={handleChangeRowDOubleCLicked}
+              defaultSortAsc={false}
+              onRowClicked={handleChangeRowCLicked}
+              highlightOnHover
+              dense
+              selectableRowSelected={(row) => row.id === selectedRow}
+              responsive
+              pointerOnHover
+              noDataComponent="No hay registros disponibles"
+              customStyles={tableStyle}
+            />
+          </Col>
+        </Row>
       )}
 
-      {showEditor && (
+      {/* {showEditor && (
         <LogEditor
           data={editorData}
           setShowEditor={setShowEditor}
           showEditor={showEditor}
         />
-      )}
+      )} */}
     </Container>
   );
 };

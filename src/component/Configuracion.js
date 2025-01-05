@@ -30,6 +30,7 @@ export const Configuracion = () => {
   } = useForm({
     defaultValues: {
       timer: timerSeconds,
+      reintent: reintentFetchMseg,
     },
   });
 

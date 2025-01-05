@@ -38,6 +38,7 @@ export const NavbarMenu = () => {
     showlogs,
     getPanelTopMetricas,
     metricas,
+    reintentFetch,
   } = useContext(GlobalContext);
 
   const [menuopen, setmenuopen] = useState(false);
@@ -51,7 +52,7 @@ export const NavbarMenu = () => {
   };
 
   const handlePanelLogs = async () => {
-    await setShowLogs(showlogs === 1 || showlogs ? 0 : 1);
+    await setShowLogs(showlogs || showlogs === 1 ? 0 : 1);
   };
   const handlerMetricas = async () => {
     await setShowMetricas(showmetricas === 1 ? 0 : 1);
@@ -60,14 +61,15 @@ export const NavbarMenu = () => {
 
   useEffect(() => {
     async function init() {
-      await getPanelTopMetricas();
+      if (timer === 1 && token) await getPanelTopMetricas();
     }
     init();
   }, []);
 
   useEffect(() => {
     async function init() {
-      if (!showmetricas) await getPanelTopMetricas();
+      if (!showmetricas && timer === 1 && token && !reintentFetch)
+        await getPanelTopMetricas();
       if (errores) {
         //if (errores.status) {
         //await setTimer(0);
@@ -94,9 +96,8 @@ export const NavbarMenu = () => {
         {
           label: "Cerrar",
           onClick: async () => {
-            await setLogout();
-            // await cleanCarro();
             setTimer(0);
+            await setLogout();
             navigate("/login");
           },
         },
@@ -118,7 +119,7 @@ export const NavbarMenu = () => {
     <Navbar
       collapseOnSelect
       expand="lg"
-      className={topError ? "navbarError" : "navbar"}
+      className={topError && token ? "navbarError" : "navbar"}
     >
       <Container fluid>
         <Navbar.Brand href="#home">
@@ -157,6 +158,30 @@ export const NavbarMenu = () => {
                 </Nav.Item>
               ) : null}
 
+              {topError && (
+                <Nav.Item className="align-items-center" style={{ margin: 10 }}>
+                  <Row
+                    className="rowAlarma align-items-center"
+                    style={{ width: "400px", height: "42px" }}
+                  >
+                    <Col
+                      md={"12"}
+                      className=""
+                      style={{ alignItems: "center", paddin: 0, margin: 0 }}
+                    >
+                      <i
+                        className="bi bi-exclamation-triangle-fill"
+                        style={{
+                          fontSize: "18pt",
+                          color: "white",
+                          paddingRight: 5,
+                        }}
+                      />
+                      Problemas en comunicación y/o conexión
+                    </Col>
+                  </Row>
+                </Nav.Item>
+              )}
               <Nav.Item className="align-items-center" style={{ margin: 10 }}>
                 <Button
                   className={

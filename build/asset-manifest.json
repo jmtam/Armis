@@ -1,14 +1,13 @@
 {
   "files": {
     "main.css": "/static/css/main.67efa82d.css",
-    "main.js": "/static/js/main.b5aa9269.js",
+    "main.js": "/static/js/main.723cdbb6.js",
     "static/js/206.79a2d0cf.chunk.js": "/static/js/206.79a2d0cf.chunk.js",
     "static/media/download.gif": "/static/media/download.dd005bdbedd4a01b3289.gif",
-    "static/media/logo_arm.svg": "/static/media/logo_arm.6c77f3e8dd19487d3bf312dffd1d2f99.svg",
     "index.html": "/index.html"
   },
   "entrypoints": [
     "static/css/main.67efa82d.css",
-    "static/js/main.b5aa9269.js"
+    "static/js/main.723cdbb6.js"
   ]
 }

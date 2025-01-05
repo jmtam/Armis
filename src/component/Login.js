@@ -18,8 +18,14 @@ import secureLocalStorage from "react-secure-storage";
 import { Loading } from "./Loading";
 
 export const Login = () => {
-  const { getLoginToken, token, credencialesInvalidas, setTimer, loading } =
-    useContext(GlobalContext);
+  const {
+    getLoginToken,
+    token,
+    credencialesInvalidas,
+    setTimer,
+    loading,
+    cleanError,
+  } = useContext(GlobalContext);
 
   const navigate = useNavigate();
 
@@ -51,9 +57,10 @@ export const Login = () => {
   };
 
   useEffect(() => {
-    setTimer(0);
     if (token) {
       navigate("/home");
+    } else {
+      setTimer(0);
     }
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);

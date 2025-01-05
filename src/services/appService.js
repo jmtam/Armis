@@ -3,6 +3,12 @@ import secureLocalStorage from "react-secure-storage";
 const APIUrl = "http://107.23.228.203:10777";
 //const APIUrl =  "http://15.229.193.237:10777"
 
+const Timeout = (time) => {
+  let controller = new AbortController();
+  setTimeout(() => controller.abort(), time * 1000);
+  return controller;
+};
+
 const getLoginToken = async (email, pwd) => {
   return fetch(APIUrl + "/monitorGetToken", {
     method: "post",
@@ -10,6 +16,8 @@ const getLoginToken = async (email, pwd) => {
       user: email,
       pass: pwd,
     }).toString(),
+    signal: Timeout(5).signal,
+    //signal: AbortSignal.timeout(5000),
   })
     .then((response) => {
       if (response.ok) return Promise.resolve(response.json());
@@ -33,11 +41,13 @@ const getPanelTopMetricas = async () => {
     headers: {
       Authorization: "Bearer " + token,
     },
+    //signal: AbortSignal.timeout(5000),
+    signal: Timeout(5).signal,
   })
     .then((response) => {
       if (response.ok) return Promise.resolve(response.json());
       else {
-        console.error(response);
+        //console.error(response);
         return Promise.reject(response);
       }
     })
@@ -54,11 +64,13 @@ const getPanelLeftPrestadores = async () => {
     headers: {
       Authorization: "Bearer " + token,
     },
+    //signal: AbortSignal.timeout(5000),
+    signal: Timeout(5).signal,
   })
     .then((response) => {
       if (response.ok) return Promise.resolve(response.json());
       else {
-        console.error(response);
+        //console.error(response);
         return Promise.reject(response);
       }
     })
@@ -82,6 +94,8 @@ const getPanelRightLogs = async (id, lastIndex) => {
       integrationId: id,
       lastLogId: lastIndex,
     }).toString(),
+    //signal: AbortSignal.timeout(5000),
+    signal: Timeout(5).signal,
   })
     .then((response) => {
       if (response.ok) return Promise.resolve(response.json());
@@ -108,11 +122,13 @@ const getPanelRightLogById = async (integracionId, logId) => {
       integrationId: integracionId,
       restoreLogId: logId,
     }).toString(),
+    //signal: AbortSignal.timeout(5000),
+    signal: Timeout(5).signal,
   })
     .then((response) => {
       if (response.ok) return Promise.resolve(response.json());
       else {
-        console.error(response);
+        //console.error(response);
         return Promise.reject(response);
       }
     })
@@ -135,11 +151,13 @@ const setPanelConfig = async (item, value) => {
       itemName: item,
       itemVal: value,
     }).toString(),
+    //signal: AbortSignal.timeout(5000),
+    signal: Timeout(5).signal,
   })
     .then((response) => {
       if (response.ok) return Promise.resolve(response.json());
       else {
-        console.error(response);
+        //console.error(response);
         return Promise.reject(response);
       }
     })
@@ -158,21 +176,3 @@ const AppService = {
 };
 
 export default AppService;
-
-// const myPromise = new Promise((resolve, reject) => {
-//   let xhr = new XMLHttpRequest();
-//   xhr.open("POST", APIUrl + "/monitorUpdateTop");
-
-//   xhr.setRequestHeader("Authorization", "Bearer " + token);
-//   xhr.onload = function () {
-//     return Promise.resolve(JSON.stringify(xhr.responseText));
-//   };
-
-//   xhr.onerror = function (err) {
-//     return Promise.reject(err);
-//   };
-
-//   xhr.send();
-// });
-
-// myPromise.then((response) => alert(response));

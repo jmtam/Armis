@@ -92,4 +92,15 @@ export const tableStyle = {
       // borderRightColor: "#ccc",
     },
   },
+  noData: {
+    style: {
+      fontFamily: "Montserrat, sans-serif",
+      fontSize: "14px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      color: "#000",
+      padding: 20,
+    },
+  },
 };

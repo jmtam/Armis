@@ -42,6 +42,7 @@ const reducer = (state, action) => {
         ...state,
         token: null,
         usuario: null,
+        timer: 0,
       };
 
     case "SET_USUARIO_AUTENTICADO":
@@ -54,7 +55,7 @@ const reducer = (state, action) => {
         timerSeconds: action.payload.timerSeconds,
         showlogs: action.payload.showlogs,
         showmetricas: action.payload.showmetricas,
-        showopciones: action.payload.showopciones,
+        // showopciones: action.payload.showopciones,
         reintentFetchMseg: action.payload.reintent_seconds,
         credencialesInvalidas: "",
       };
@@ -144,13 +145,6 @@ const reducer = (state, action) => {
         ...state,
         donwloadingId: action.payload,
       };
-
-    // case "SET_DOWNLOADING_DATA":
-    //   return {
-    //     ...state,
-    //     donwloadingData: action.payload,
-    //   };
-
     case "SET_LSTLOGINDEX":
       return {
         ...state,
@@ -196,7 +190,7 @@ export const GlobalContextProvider = ({ children }) => {
       let _usuario = secureLocalStorage.getItem("usuario");
       let _showlogs = secureLocalStorage.getItem("showlogs");
       let _showmetricas = secureLocalStorage.getItem("showmetricas");
-      let _showopciones = secureLocalStorage.getItem("showopciones");
+      // let _showopciones = secureLocalStorage.getItem("showopciones");
       let _reintent_seconds = secureLocalStorage.getItem("reintent_seconds");
 
       const payload = {
@@ -204,10 +198,12 @@ export const GlobalContextProvider = ({ children }) => {
         usuario: _usuario ? _usuario : null,
         timer: _timer ? _timer : 1,
         timerSeconds: _timer_seconds ? _timer_seconds : 2000,
-        showlogs: _showlogs ? _showlogs : 0,
-        showmetricas: _showmetricas ? _showmetricas : 0,
-        showopciones: _showopciones ? _showopciones : 0,
-        reintent_seconds: _reintent_seconds ? _reintent_seconds : 5000,
+        showlogs: _showlogs ? parseInt(_showlogs) : 0,
+        showmetricas: _showmetricas ? parseInt(_showmetricas) : 0,
+        // showopciones: _showopciones ? parseInt(_showopciones) : 0,
+        reintent_seconds: _reintent_seconds
+          ? parseInt(_reintent_seconds)
+          : 5000,
       };
 
       //console.log(JSON.stringify(payload));
@@ -223,15 +219,20 @@ export const GlobalContextProvider = ({ children }) => {
 
   /****  FUNCION GLOBAL CAPUTA DE ERRORES *********/
   /*  Segun el obejto error que recibe se define la accion que se debe realizar. Si el error es  */
-  /*  401 reintenta con las credenciales  */
-  /****Recibe un objeto error */
-  /**** */
+  /*  401 reintenta solicitar login con credenciales de usuario  */
+  /**** Recibe un objeto error */
+
   async function setError(error) {
-    console.error(error);
+    //console.error(error);
 
     if (error && error.status === 401) {
+      dispatch({
+        type: "SET_TIMER",
+        payload: 0,
+      });
+
       await getLoginToken(state.usuario, state.pwd);
-      //setLogout();
+
       cleanError();
     } else {
       dispatch({
@@ -245,6 +246,10 @@ export const GlobalContextProvider = ({ children }) => {
     }
   }
 
+  /****  FUNCION PARA SOLICITAR TOKEN *********/
+  /*  LA funcion llama a services y solicita el token de acceso  */
+  /*  Guarda el token en el estado de aplicación  */
+  /****Recibe credenciales */
   async function getLoginToken(email, pwd) {
     dispatch({
       type: "LOADING",
@@ -490,7 +495,7 @@ export const GlobalContextProvider = ({ children }) => {
       payload: flag,
     });
 
-    console.log(flag === 0 ? "TIMER STOPPED" : "TIMER STARTED");
+    //console.log(flag === 0 ? "TIMER STOPPED" : "TIMER STARTED");
   }
 
   function setTimerDate(date) {
@@ -578,14 +583,6 @@ export const GlobalContextProvider = ({ children }) => {
     });
     // saveInitialState();
   }
-
-  // function clearDownloadLogData() {
-  //   dispatch({
-  //     type: "SET_DOWNLOADING_DATA",
-  //     payload: null,
-  //   });
-  //   // saveInitialState();
-  // }
 
   function setReintentFetchMseg(seconds) {
     secureLocalStorage.setItem("reintent_seconds", seconds);

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { GlobalContext } from "../context/GlobalContext";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -12,14 +12,13 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
 export const Home = () => {
   // const navigate = useNavigate();
-  const [widthResize, setwidthResize] = useState(0);
 
-  const { showopciones, showmetricas, setTimer, showlogs, loading, metricas } =
+  const { showopciones, showmetricas, setTimer, showlogs } =
     useContext(GlobalContext);
 
   useEffect(() => {
     async function init() {
-      console.log(window.screen.height);
+      //console.log(window.screen.height);
       setTimer(1);
     }
 
@@ -30,11 +29,10 @@ export const Home = () => {
 
   return (
     <Container className="panelContainer" fluid>
-      {/* <Row>{parseInt(widthResize)}</Row> */}
       <Row>
         <Col>
-          {showopciones === 1 && <Configuracion />}
-          {showmetricas === 1 && <Metricas />}
+          {showopciones || showopciones === 1 ? <Configuracion /> : null}
+          {showmetricas || showmetricas === 1 ? <Metricas /> : null}
         </Col>
       </Row>
 
@@ -42,10 +40,15 @@ export const Home = () => {
         <PanelGroup
           autoSaveId="persistence"
           direction="horizontal"
-          set
-          style={{ margin: 0, padding: 0, marginLeft: 6, paddingRight: 12 }}
+          style={{
+            margin: 0,
+            padding: 0,
+            marginLeft: 6,
+            paddingRight: 12,
+            marginTop: 5,
+          }}
         >
-          <Panel>
+          <Panel id="integraciones" order={1}>
             <Col
               style={{
                 paddingRight: 0,
@@ -54,21 +57,21 @@ export const Home = () => {
               }}
               // md={showlogs === 0 && 12}
               // lg={showlogs === 0 && 12}
-              xs={12}
+              //xs={12}
             >
               <PanelLeft />
             </Col>
           </Panel>
           <PanelResizeHandle />
-          {showlogs === 1 ? (
-            <Panel>
+          {showlogs || showlogs === 1 ? (
+            <Panel id="logs" order={2}>
               <Col
                 style={{
                   paddingRight: 0,
                   paddingLeft: 7,
                   marginTop: 6,
                 }}
-                xs={12}
+                //xs={12}
                 // md={7}
                 // lg={7}
               >
