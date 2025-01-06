@@ -14,7 +14,7 @@ export const Metricas = () => {
     //token,
     timer,
     getPanelTopMetricas,
-    timerSeconds,
+    timermseg,
     metricas,
     setPanelConfig,
     setShowMetricas,
@@ -24,7 +24,7 @@ export const Metricas = () => {
     async function init() {
       if (timer === 1) {
         if (metricas) {
-          await sleep(timerSeconds);
+          await sleep(timermseg);
         }
         await getPanelTopMetricas();
       }

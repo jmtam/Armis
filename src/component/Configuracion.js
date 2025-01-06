@@ -15,10 +15,10 @@ import { useForm, Controller } from "react-hook-form";
 export const Configuracion = () => {
   const {
     setTimerSeconds,
-    timerSeconds,
+    timermseg,
     setShowOpciones,
     setReintentFetchMseg,
-    reintentFetchMseg,
+    reintentmseg,
   } = useContext(GlobalContext);
   const [procesado, setProcesado] = useState(false);
 
@@ -29,8 +29,8 @@ export const Configuracion = () => {
     //reset,
   } = useForm({
     defaultValues: {
-      timer: timerSeconds,
-      reintent: reintentFetchMseg,
+      timer: timermseg,
+      reintent: reintentmseg,
     },
   });
 
@@ -65,7 +65,7 @@ export const Configuracion = () => {
                   <Controller
                     name="timer"
                     control={control}
-                    defaultValue={timerSeconds}
+                    defaultValue={timermseg}
                     rules={{
                       required: true,
                       pattern: {
@@ -117,7 +117,7 @@ export const Configuracion = () => {
                   <Controller
                     name="reintent"
                     control={control}
-                    defaultValue={reintentFetchMseg}
+                    defaultValue={reintentmseg}
                     rules={{
                       required: true,
                       pattern: {

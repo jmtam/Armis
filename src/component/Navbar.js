@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/img/logo.png";
@@ -8,9 +9,7 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import Form from "react-bootstrap/Row";
 import Spinner from "react-bootstrap/Spinner";
-import Offcanvas from "react-bootstrap/Offcanvas";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 
@@ -33,7 +32,7 @@ export const NavbarMenu = () => {
     errores,
     setShowMetricas,
     showmetricas,
-    timerSeconds,
+    timermseg,
     setShowLogs,
     showlogs,
     getPanelTopMetricas,
@@ -61,7 +60,7 @@ export const NavbarMenu = () => {
 
   useEffect(() => {
     async function init() {
-      if (timer === 1 && token) await getPanelTopMetricas();
+      if (timer === 1 && token && !reintentFetch) await getPanelTopMetricas();
     }
     init();
   }, []);
@@ -71,13 +70,7 @@ export const NavbarMenu = () => {
       if (!showmetricas && timer === 1 && token && !reintentFetch)
         await getPanelTopMetricas();
       if (errores) {
-        //if (errores.status) {
-        //await setTimer(0);
         setTopError(true);
-        // } else {
-        //   await setTimer(0);
-        //   navigate("/error");
-        // }
       } else {
         setTopError(false);
       }
@@ -249,7 +242,7 @@ export const NavbarMenu = () => {
                         style={{ marginRight: 3, fontSize: 12 }}
                       ></i>
                       <span style={{ fontSize: 10 }}>
-                        {"  (" + timerSeconds + " mseg)"}
+                        {"  (" + timermseg + " mseg)"}
                       </span>
                     </Col>
                     <Col
@@ -418,7 +411,7 @@ export const NavbarMenu = () => {
 //                 >
 //                   <i className="bi bi-arrow-clock" /> Update
 //                   <span style={{ fontSize: 10 }}>
-//                     {"  (" + timerSeconds + " mseg)"}
+//                     {"  (" + timermseg + " mseg)"}
 //                   </span>
 //                 </Col>
 //                 <Col

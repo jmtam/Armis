@@ -19,15 +19,17 @@ export const PanelLeft = () => {
     timer,
     setTimer,
     //setTimerDate,
-    timerSeconds,
+    timermseg,
     setPrestadorId,
     prestadorId,
     setClearLogs,
     clearLogLastIndex,
     token,
-
+    getLoginToken,
+    usuario,
+    pwd,
     reintentFetch,
-    reintentFetchMseg,
+    reintentmseg,
   } = useContext(GlobalContext);
 
   const [selectedRow, setSelectedRow] = useState();
@@ -52,15 +54,14 @@ export const PanelLeft = () => {
     }
   }, [prestadores, searching]);
 
-  //const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   useEffect(() => {
     async function init() {
       if (timer === 1 && token) {
-        // if (prestadores) {
-        //   await sleep(timerSeconds);
-        // }
+        if (prestadores) {
+          await sleep(timermseg);
+        }
         await getPanelLeftPrestadores();
-        // setTimerDate(moment().format("HH:mm:ss").toString());
       }
     }
     init();
@@ -69,18 +70,23 @@ export const PanelLeft = () => {
 
   useEffect(() => {
     let interval = null;
-    if (reintentFetch) {
-      interval = setInterval(async () => {
-        await getPanelLeftPrestadores();
-        console.log(
-          "REINTENTO ACTIVO  " +
-            moment().format("HH:mm:ss").toString() +
-            " Timer encendido " +
-            timer +
-            " Tiempo de reintento " +
-            reintentFetchMseg
-        );
-      }, reintentFetchMseg);
+    if (reintentFetch || reintentFetch === 1) {
+      interval = setInterval(
+        async () => {
+          await getLoginToken(usuario, pwd);
+          await getPanelLeftPrestadores();
+
+          console.log(
+            "REINTENTO ACTIVO  " +
+              moment().format("HH:mm:ss").toString() +
+              " Timer encendido " +
+              timer +
+              " Tiempo de reintento " +
+              reintentmseg
+          );
+        },
+        reintentmseg ? reintentmseg : 5000
+      );
     } else {
       clearInterval(interval);
       console.log(
@@ -89,7 +95,7 @@ export const PanelLeft = () => {
     }
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reintentFetch, reintentFetchMseg]);
+  }, [reintentFetch]);
 
   const columns = [
     {

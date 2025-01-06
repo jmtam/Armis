@@ -20,6 +20,7 @@ export const Home = () => {
     async function init() {
       //console.log(window.screen.height);
       setTimer(1);
+      console.clear();
     }
 
     init();

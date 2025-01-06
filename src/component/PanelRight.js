@@ -11,7 +11,7 @@ import Row from "react-bootstrap/Row";
 import Form from "react-bootstrap/Form";
 import { tableStyle } from "../services/helpers";
 import downloadIcon from "../assets/img/download.gif";
-import LogEditor from "./Editor";
+//import LogEditor from "./Editor";
 import { Container, Button } from "react-bootstrap";
 
 export const PanelRight = () => {
@@ -21,7 +21,7 @@ export const PanelRight = () => {
     timer,
     prestadorId,
     getPanelRightLogs,
-    //timerSeconds,
+    //timermseg,
     prestadores,
     donwloadingId,
     getPanelRightLogById,
@@ -45,10 +45,6 @@ export const PanelRight = () => {
   useEffect(() => {
     async function init() {
       if (timer === 1 && showlogs && token && !reintentFetch) {
-        // if (prestadorId) {
-        //   await sleep(timerSeconds);
-        // }
-
         if (prestadorId && prestadores) {
           var obj = prestadores.filter((p) => p.id === prestadorId);
           //alert(obj[0].integracion);

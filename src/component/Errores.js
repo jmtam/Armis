@@ -15,7 +15,7 @@ export const Errores = () => {
     //alert(JSON.stringify(errores));
     if (errores && errores.status === 401) {
       //alert(JSON.stringify(errores));
-      setLogout();
+      //setLogout();
     }
 
     //if (!errores) navigate("/");

@@ -19,19 +19,19 @@ let initialState = {
   metricas: null,
   logs: null,
   timer: 1,
-  timerSeconds: null,
+  timermseg: 2000,
   timerDate: null,
   showopciones: 0,
   showmetricas: 1,
   showlogs: 0,
   loading: null,
   errores: null,
-  // donwloadingId: null,
-  // donwloadingData: null,
   lastLogIndex: 0,
   reintentFetch: 0,
-  reintentFetchMseg: 5000,
+  reintentmseg: 2000,
 
+  // donwloadingId: null,
+  // donwloadingData: null,
   //notificaciones: null,
 };
 
@@ -42,7 +42,9 @@ const reducer = (state, action) => {
         ...state,
         token: null,
         usuario: null,
+        pwd: null,
         timer: 0,
+        reintentFetch: 0,
       };
 
     case "SET_USUARIO_AUTENTICADO":
@@ -50,13 +52,11 @@ const reducer = (state, action) => {
         ...state,
         token: action.payload.token,
         usuario: action.payload.usuario,
-
         timer: action.payload.timer,
-        timerSeconds: action.payload.timerSeconds,
+        timermseg: action.payload.timermseg,
+        reintentmseg: action.payload.reintentmseg,
         showlogs: action.payload.showlogs,
         showmetricas: action.payload.showmetricas,
-        // showopciones: action.payload.showopciones,
-        reintentFetchMseg: action.payload.reintent_seconds,
         credencialesInvalidas: "",
       };
 
@@ -65,6 +65,8 @@ const reducer = (state, action) => {
         ...state,
         token: null,
         usuario: null,
+        pwd: null,
+        reintentFetch: 0,
         credencialesInvalidas: action.payload,
       };
 
@@ -107,7 +109,7 @@ const reducer = (state, action) => {
     case "SET_TIMER_SECONDS":
       return {
         ...state,
-        timerSeconds: action.payload,
+        timermseg: action.payload,
       };
 
     case "SET_TIMER_DATE":
@@ -160,7 +162,7 @@ const reducer = (state, action) => {
     case "SET_REINTENTFETCH_MSEG":
       return {
         ...state,
-        reintentFetchMseg: action.payload,
+        reintentmseg: action.payload,
       };
 
     case "SET_CREDENCILES":
@@ -197,16 +199,12 @@ export const GlobalContextProvider = ({ children }) => {
         token: _token ? _token : null,
         usuario: _usuario ? _usuario : null,
         timer: _timer ? _timer : 1,
-        timerSeconds: _timer_seconds ? _timer_seconds : 2000,
-        showlogs: _showlogs ? parseInt(_showlogs) : 0,
-        showmetricas: _showmetricas ? parseInt(_showmetricas) : 0,
-        // showopciones: _showopciones ? parseInt(_showopciones) : 0,
-        reintent_seconds: _reintent_seconds
-          ? parseInt(_reintent_seconds)
-          : 5000,
+        timermseg: _timer_seconds ? _timer_seconds : 2000,
+        reintentmseg: _reintent_seconds ? _reintent_seconds : 2000,
+        showlogs: _showlogs ? _showlogs : 0,
+        showmetricas: _showmetricas ? _showmetricas : 0,
       };
 
-      //console.log(JSON.stringify(payload));
       dispatch({
         type: "SET_USUARIO_AUTENTICADO",
         payload: payload,
@@ -225,20 +223,18 @@ export const GlobalContextProvider = ({ children }) => {
   async function setError(error) {
     //console.error(error);
 
+    dispatch({
+      type: "SET_REINTENTFETCH",
+      payload: 1,
+    });
+
     if (error && error.status === 401) {
       dispatch({
         type: "SET_TIMER",
         payload: 0,
       });
-
-      await getLoginToken(state.usuario, state.pwd);
-
-      cleanError();
+      //cleanError();
     } else {
-      dispatch({
-        type: "SET_REINTENTFETCH",
-        payload: 1,
-      });
       dispatch({
         type: "SET_ERROR",
         payload: error,
@@ -259,6 +255,7 @@ export const GlobalContextProvider = ({ children }) => {
     await AppService.getLoginToken(email, pwd)
       .then((response) => {
         //alert("Login" + response);
+        console.log("SOLICITUD DE TOKEN OK");
 
         let token = response.access_token;
 
@@ -268,7 +265,10 @@ export const GlobalContextProvider = ({ children }) => {
         const payload = {
           token: token,
           timer: state.timer,
-          timerSeconds: state.timerSeconds,
+          timermseg: state.timermseg,
+          reintentmseg: state.reintentmseg,
+          showlogs: state.showlogs,
+          showmetricas: state.showmetricas,
         };
 
         dispatch({
@@ -290,9 +290,15 @@ export const GlobalContextProvider = ({ children }) => {
           type: "SET_TIMER",
           payload: 1,
         });
+
+        dispatch({
+          type: "SET_REINTENTFETCH",
+          payload: 0,
+        });
       })
       .catch((error) => {
         if (error.status === 401 || error.status === "401") {
+          console.log("SOLICITUD DE TOKEN INVALIDA");
           dispatch({
             type: "CREDENCIALES_INVALIDAS",
             payload: "Usuario y/o constraseña no válidos2",
@@ -347,6 +353,11 @@ export const GlobalContextProvider = ({ children }) => {
       dispatch({
         type: "SET_TIMER_DATE",
         payload: moment().format("HH:mm:ss").toString(),
+      });
+    } else {
+      dispatch({
+        type: "SET_REINTENTFETCH",
+        payload: 0,
       });
     }
     await AppService.getPanelLeftPrestadores()
@@ -481,6 +492,11 @@ export const GlobalContextProvider = ({ children }) => {
   async function setLogout() {
     dispatch({
       type: "UNSET_USUARIO_AUTENTICADO",
+    });
+
+    dispatch({
+      type: "SET_TIMER",
+      payload: 0,
     });
 
     secureLocalStorage.removeItem("token");
@@ -624,6 +640,7 @@ export const GlobalContextProvider = ({ children }) => {
         clearLogLastIndex,
         setReintentFetchMseg,
         usuario: state.usuario,
+        pwd: state.pwd,
         token: state.token,
         credencialesInvalidas: state.credencialesInvalidas,
         errores: state.errores,
@@ -633,7 +650,7 @@ export const GlobalContextProvider = ({ children }) => {
         logs: state.logs,
         metricas: state.metricas,
         timer: state.timer,
-        timerSeconds: state.timerSeconds,
+        timermseg: state.timermseg,
         timerDate: state.timerDate,
         showopciones: state.showopciones,
         showmetricas: state.showmetricas,
@@ -641,7 +658,7 @@ export const GlobalContextProvider = ({ children }) => {
         donwloadingId: state.donwloadingId,
         lastLogIndex: state.lastLogIndex,
         reintentFetch: state.reintentFetch,
-        reintentFetchMseg: state.reintentFetchMseg,
+        reintentmseg: state.reintentmseg,
         //donwloadingData: state.donwloadingData,
         //notificaciones: state.notificaciones,
       }}
