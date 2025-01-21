@@ -1,3 +1,6 @@
+/****  COMPONENTE DESPLIEGA TABLA IZQUIERADA DE INTEGRACIONES *********/
+/* En la carga inicial solicita datos de integraciones */
+
 /* eslint-disable array-callback-return */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState, useContext } from "react";

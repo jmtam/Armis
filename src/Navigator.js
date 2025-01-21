@@ -1,3 +1,7 @@
+/****  RUTAS DE NAVEGACION Y VALIDACION DE USUARIO EN SESION *********/
+/* Si el usuario esta en sesión despliega barra navehacion y el componente home en caso contrario 
+envia a login  */
+
 import React, { Fragment, useContext } from "react";
 import { NavbarMenu } from "./component/Navbar";
 import { Home } from "./component/Home";

@@ -1,3 +1,6 @@
+/****  COMPONENTE ARMA LA BARRA SUPERIOR *********/
+/*    */
+
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";

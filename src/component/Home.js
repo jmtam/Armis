@@ -1,3 +1,7 @@
+/****  COMPONENTE HOME ARMADO DE TABLAS Y DE INTEGRACIONES Y LOGS *********/
+/* Despliega los componentes de tablas de integraciones y logs, como la barra de métricas y configuraciones
+según se desee o no mostrar por el usuario */
+
 import React, { useContext, useEffect } from "react";
 import { GlobalContext } from "../context/GlobalContext";
 import Row from "react-bootstrap/Row";
@@ -31,6 +35,7 @@ export const Home = () => {
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Obtiene las medidas de la pantalla para manejo de resize
   const { width, height, ref } = useResizeDetector({});
 
   return (
@@ -43,7 +48,6 @@ export const Home = () => {
           {showmetricas || showmetricas === 1 ? <Metricas /> : null}
         </Col>
       </Row>
-
       <Row>
         <PanelGroup
           autoSaveId="persistence"

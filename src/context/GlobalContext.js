@@ -318,6 +318,9 @@ export const GlobalContextProvider = ({ children }) => {
       });
   }
 
+  /****  FUNCION PARA SOLICITAR DATOS DE METRICAS *********/
+  /*  LA funcion llama a services para obtener datos de las métricas  */
+  /**** Recibe JSON de datos */
   async function getPanelTopMetricas() {
     dispatch({
       type: "LOADING",
@@ -344,6 +347,9 @@ export const GlobalContextProvider = ({ children }) => {
       });
   }
 
+  /****  FUNCION PARA SOLICITAR DATOS DE INTEGRACIONES *********/
+  /*  LA funcion llama a services para obtener datos de integraciones  */
+  /**** Recibe JSON de datos */
   async function getPanelLeftPrestadores() {
     dispatch({
       type: "LOADING",
@@ -380,6 +386,10 @@ export const GlobalContextProvider = ({ children }) => {
       });
   }
 
+  /****  FUNCION PARA SOLICITAR DATOS DE LOGS DE UNA INTEGRACION *********/
+  /*  LA funcion llama a services con el ID de la integracion para obtener datos de logs  */
+  /*** Envia el ID de la integración */
+  /**** Recibe JSON de datos */
   async function getPanelRightLogs(id) {
     //alert("context right" + id)
     dispatch({
@@ -421,6 +431,10 @@ export const GlobalContextProvider = ({ children }) => {
       });
   }
 
+  /****  FUNCION PARA SOLICITAR DATOS DE UN LOG DE UNA INTEGRACION *********/
+  /*  LA funcion llama a services con el ID del log para obtener datos se utiliza en el caso de logs de mucho tamaño  */
+  /*** Envia el ID de la integración */
+  /**** Recibe JSON de datos */
   async function getPanelRightLogById(integracionId, logId) {
     //alert("context right" + id)
 

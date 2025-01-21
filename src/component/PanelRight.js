@@ -1,3 +1,6 @@
+/****  COMPONENTE DESPLIEGA TABLA DERECHA DE LOGS DE INTEGRACION SELECCIONADA *********/
+/* En la carga inicial solicita datos de logs de la integracion seleccionada */
+
 /* eslint-disable array-callback-return */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useState, useEffect, useRef } from "react";

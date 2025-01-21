@@ -1,3 +1,5 @@
+/****  COMPONENTE ARMA LA BARRA DE CONFIGURACIONES *********/
+
 import React, { useContext, useState } from "react";
 import { GlobalContext } from "../context/GlobalContext";
 import {

@@ -1,3 +1,7 @@
+/****  ACCESOS A LOS END POINT DE API BACK END *********/
+/*  Servicios brinda acceso a las api con metodo fetch recibe los parametros en caso de contener
+  y devuelve JSON con los datos segun el servicio y error en caso que suceda   */
+
 import secureLocalStorage from "react-secure-storage";
 
 //const APIUrl = "https://107.23.228.203:10777";
