@@ -1,6 +1,7 @@
 import secureLocalStorage from "react-secure-storage";
 
-const APIUrl = "http://107.23.228.203:10777";
+//const APIUrl = "https://107.23.228.203:10777";
+const APIUrl = "https://homo-integraciones.arm-services.com:10777";
 //const APIUrl =  "http://15.229.193.237:10777"
 
 const Timeout = (time) => {

@@ -38,6 +38,7 @@ export const NavbarMenu = () => {
     getPanelTopMetricas,
     metricas,
     reintentFetch,
+    cleanError,
   } = useContext(GlobalContext);
 
   const [menuopen, setmenuopen] = useState(false);
@@ -71,6 +72,7 @@ export const NavbarMenu = () => {
         await getPanelTopMetricas();
       if (errores) {
         setTopError(true);
+        //await cleanError();
       } else {
         setTopError(false);
       }
@@ -115,7 +117,7 @@ export const NavbarMenu = () => {
       className={topError && token ? "navbarError" : "navbar"}
     >
       <Container fluid>
-        <Navbar.Brand href="#home">
+        <Navbar.Brand href="/">
           <img src={logo} alt="..." className="navLogoImg" />
         </Navbar.Brand>
         <Navbar.Toggle
@@ -145,13 +147,13 @@ export const NavbarMenu = () => {
                           paddingRight: 5,
                         }}
                       />
-                      Problemas en Servidor de Integraciones:{metricas.status}
+                      Problemas en comunicación con server API:{metricas.status}
                     </Col>
                   </Row>
                 </Nav.Item>
               ) : null}
 
-              {topError && (
+              {/* {topError && (
                 <Nav.Item className="align-items-center" style={{ margin: 10 }}>
                   <Row
                     className="rowAlarma align-items-center"
@@ -174,7 +176,7 @@ export const NavbarMenu = () => {
                     </Col>
                   </Row>
                 </Nav.Item>
-              )}
+              )} */}
               <Nav.Item className="align-items-center" style={{ margin: 10 }}>
                 <Button
                   className={
@@ -355,241 +357,3 @@ export const NavbarMenu = () => {
     </Navbar>
   );
 };
-
-// <>
-//   {/* {token && <Notification />} */}
-//   {[false].map((expand) => (
-//     <Navbar
-//       collapseonselect="true"
-//       fixed="top"
-//       key={expand}
-//       expand={expand}
-//       className={topError ? "navbarError" : "navbar"}
-//     >
-//       <Container fluid className="align-items-center">
-//         <Navbar.Brand href="/">
-//           {" "}
-//           <img src={logo} alt="..." className="navLogoImg" />
-//         </Navbar.Brand>
-//         {token && (
-//           <Navbar.Toggle
-//             className="pe-3 me-auto navbar-toggler1"
-//             aria-controls={`offcanvasNavbar-expand-${expand}`}
-//             onClick={togglemenu}
-//           >
-//             <i
-//               onClick={togglemenu}
-//               className="bi bi-list"
-//               style={{
-//                 fontSize: "25pt",
-//                 color: "#f8f8f8",
-//               }}
-//             ></i>
-//           </Navbar.Toggle>
-//         )}
-//         {token && (
-//           <Nav.Link className="pe-2 mr-auto">
-//             {" "}
-//             <i
-//               className="bi bi-bell"
-//               style={{
-//                 fontSize: "22pt",
-//                 color: "#f8f8f8",
-//               }}
-//               onClick={() => navigate("/notificaciones")}
-//             ></i>
-//           </Nav.Link>
-//         )}
-//         {token && (
-//           <>
-//             <Navbar.Text className="pe-3 mr-auto align-items-center">
-//               <Row className="rowMetrica" style={{ marginRight: "4%" }}>
-//                 <Col
-//                   md={"2"}
-//                   className="colLeftMetrica text12"
-//                   style={{ width: "120px" }}
-//                 >
-//                   <i className="bi bi-arrow-clock" /> Update
-//                   <span style={{ fontSize: 10 }}>
-//                     {"  (" + timermseg + " mseg)"}
-//                   </span>
-//                 </Col>
-//                 <Col
-//                   md={"9"}
-//                   className={
-//                     timer === 1
-//                       ? "colRightMetrica text12"
-//                       : "colRightMetrica colRightMetricaRojo text12"
-//                   }
-//                   style={{ width: "70px" }}
-//                 >
-//                   {timerDate && timerDate}
-//                 </Col>
-//               </Row>
-//             </Navbar.Text>
-//             <Navbar.Text className="pe-2 mr-auto align-items-center">
-//               <Row
-//                 className="align-items-center"
-//                 style={{
-//                   marginRight: "1%",
-//                   width: "160px",
-//                   //backgroundColor: "red",
-//                 }}
-//               >
-//                 <Col md={3} xs={3} lg={3} style={{ padding: 0, margin: 0 }}>
-//                   <OverlayTrigger
-//                     placement="bottom"
-//                     overlay={renderTooltip(
-//                       timer === 1
-//                         ? "Pausar captura de datos"
-//                         : "Encender captura de datos"
-//                     )}
-//                   >
-//                     <Button
-//                       className={
-//                         timer === 1
-//                           ? "btn btn-custom-start monserrat"
-//                           : "btn btn-custom-stop monserrat"
-//                       }
-//                       onClick={async () =>
-//                         await setTimer(timer === 1 ? 0 : 1)
-//                       }
-//                     >
-//                       {timer === 1 ? (
-//                         <i
-//                           className="bi bi-play"
-//                           style={{ fontSize: "15pt" }}
-//                         />
-//                       ) : (
-//                         <i
-//                           className="bi bi-stop iconStop"
-//                           style={{ fontSize: "15pt" }}
-//                         />
-//                       )}
-//                     </Button>
-//                   </OverlayTrigger>
-//                 </Col>
-//                 <Col
-//                   className="text14"
-//                   md={6}
-//                   xs={6}
-//                   lg={6}
-//                   style={{ padding: 0, margin: 0, color: "#fff" }}
-//                 >
-//                   {timer === 1 ? "En proceso" : "En pausa"}
-//                 </Col>
-
-//                 <Col
-//                   md={2}
-//                   xs={2}
-//                   lg={2}
-//                   style={{ alignItems: "center", padding: 0, margin: 0 }}
-//                 >
-//                   {timer === 0 ? (
-//                     <Spinner
-//                       animation="grow"
-//                       size="sm"
-//                       style={{ backgroundColor: "white" }}
-//                     />
-//                   ) : (
-//                     <Spinner
-//                       animation="grow"
-//                       size="sm"
-//                       style={{ visibility: "hidden" }}
-//                     />
-//                   )}
-//                 </Col>
-//               </Row>
-//             </Navbar.Text>
-//           </>
-//         )}
-
-//         {token && (
-//           <Navbar.Offcanvas
-//             show={menuopen}
-//             className="navMenuLeft"
-//             id={`offcanvasNavbar-expand-${expand}`}
-//             style={{ backgroundSize: "0", backgroundColor: "#595" }}
-//             aria-labelledby={`offcanvasNavbarLabel-expand-${expand}`}
-//             placement="start"
-//             onClick={() => setmenuopen(false)}
-//           >
-//             <Offcanvas.Header>
-//               <Offcanvas.Title id={`offcanvasNavbarLabel-expand-${expand}`}>
-//                 <Row>
-//                   <Col>
-//                     <img src={logo} alt="..." className="navLogoImgMenu" />
-//                   </Col>
-//                   <Col style={{ verticalAlign: "middle" }}>
-//                     <i
-//                       onClick={togglemenu}
-//                       className="bi bi-x-circle-fill"
-//                       style={{
-//                         position: "absolute",
-//                         right: 0,
-//                         fontSize: "16pt",
-//                         color: "#f8f8f8",
-//                         paddingRight: "2%",
-//                       }}
-//                     ></i>
-//                   </Col>
-//                 </Row>
-//               </Offcanvas.Title>
-//             </Offcanvas.Header>
-//             <Offcanvas.Body>
-//               <Nav className="justify-content-end flex-grow-1 pe-3">
-//                 <OverlayTrigger
-//                   placement="right"
-//                   overlay={renderTooltip("Mostrar u ocultar métricas")}
-//                 >
-//                   <Nav.Link
-//                     href="#"
-//                     onClick={() => handlerMetricas()}
-//                     style={{ width: 100 }}
-//                   >
-//                     Métricas
-//                   </Nav.Link>
-//                 </OverlayTrigger>
-
-//                 <OverlayTrigger
-//                   placement="right"
-//                   overlay={renderTooltip("Mostrar u ocultar configuración")}
-//                 >
-//                   <Nav.Link
-//                     href="#"
-//                     onClick={() => handlerOptions()}
-//                     style={{ width: 150 }}
-//                   >
-//                     Configuraciones
-//                   </Nav.Link>
-//                 </OverlayTrigger>
-//               </Nav>
-//               <Form className="d-flex" style={{ marginTop: "5%" }}>
-//                 <OverlayTrigger
-//                   placement="bottom"
-//                   overlay={renderTooltip("Cerrar sesión de usuario")}
-//                 >
-//                   <Button
-//                     data-bs-dismiss="offcanvas"
-//                     variant="outline-success"
-//                     className="btn-logout text16"
-//                     onClick={() => handlerLogout()}
-//                   >
-//                     {usuario}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-//                     <i
-//                       className="bi bi-box-arrow-right"
-//                       style={{
-//                         fontSize: "14pt",
-//                         color: "#001f51",
-//                       }}
-//                     ></i>
-//                   </Button>
-//                 </OverlayTrigger>
-//               </Form>
-//             </Offcanvas.Body>
-//           </Navbar.Offcanvas>
-//         )}
-//       </Container>
-//     </Navbar>
-//   ))}
-// </>

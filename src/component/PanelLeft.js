@@ -9,15 +9,14 @@ import DataTable from "react-data-table-component"; //createTheme
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Form from "react-bootstrap/Form";
-import { tableStyle } from "../services/helpers";
 import { Container } from "react-bootstrap";
 
-export const PanelLeft = () => {
+export const PanelLeft = ({ windowsH }) => {
   const {
     getPanelLeftPrestadores,
     prestadores,
     timer,
-    setTimer,
+    //setTimer,
     //setTimerDate,
     timermseg,
     setPrestadorId,
@@ -30,6 +29,9 @@ export const PanelLeft = () => {
     pwd,
     reintentFetch,
     reintentmseg,
+    setLogout,
+    showopciones,
+    showmetricas,
   } = useContext(GlobalContext);
 
   const [selectedRow, setSelectedRow] = useState();
@@ -41,12 +43,14 @@ export const PanelLeft = () => {
       if (!prestadorId) {
         setSelectedRow(1);
         await setPrestadorId(1);
+      } else {
+        setSelectedRow(prestadorId);
       }
     }
 
     init();
     //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [prestadorId]);
 
   useEffect(() => {
     if (prestadores) {
@@ -73,7 +77,12 @@ export const PanelLeft = () => {
     if (reintentFetch || reintentFetch === 1) {
       interval = setInterval(
         async () => {
-          await getLoginToken(usuario, pwd);
+          if (usuario && pwd) {
+            await getLoginToken(usuario, pwd);
+          } else {
+            setLogout();
+          }
+
           await getPanelLeftPrestadores();
 
           console.log(
@@ -206,6 +215,7 @@ export const PanelLeft = () => {
     },
   ];
 
+  // ALERTAS
   // const conditionalRowStyles = [
   //   {
   //     when: (row) => row.id === 1,
@@ -240,11 +250,12 @@ export const PanelLeft = () => {
   // ];
 
   const handleChangeRowCLicked = async (row, event) => {
-    await setClearLogs();
-    await clearLogLastIndex();
-    await setPrestadorId(row.id);
-    setSelectedRow(row.id);
-    if (timer === 0) setTimer(1);
+    if (timer === 1) {
+      await setClearLogs();
+      await clearLogLastIndex();
+      await setPrestadorId(row.id);
+      setSelectedRow(row.id);
+    }
   };
 
   const handleSearch = async (e) => {
@@ -271,10 +282,96 @@ export const PanelLeft = () => {
     setData(searchData);
   };
 
-  const resetSearch = async (e) => {
-    e.preventDefault();
-    e.target.value = "";
-    setSearching(false);
+  // const resetSearch = async (e) => {
+  //   e.preventDefault();
+  //   e.target.value = "";
+  //   setSearching(false);
+  // };
+
+  const tableStyle = {
+    table: {
+      style: {
+        paddingLeft: 0,
+        marginTop: 10,
+        marginBottom: "5",
+        maxHeight:
+          showopciones || showmetricas ? windowsH - 170 : windowsH - 120,
+        minHeight:
+          showopciones || showmetricas ? windowsH - 170 : windowsH - 120,
+      },
+    },
+    rows: {
+      style: {
+        textWrap: "nowrap",
+        backgroundColor: "#fff",
+        fontFamily: '"Montserrat", sans-serif',
+        fontSize: "12px !important",
+      },
+      denseStyle: {
+        minHeight: "22px",
+      },
+      selectedHighlightStyle: {
+        "&:nth-of-type(n)": {
+          backgroundColor: "rgba(202, 245, 207, 0.7)",
+          // borderBottomColor: "#eee",
+          color: "#000",
+          fontWeight: "500",
+        },
+      },
+      highlightOnHoverStyle: {
+        backgroundColor: "#ccc",
+        transitionDuration: "0.15s",
+        transitionProperty: "background-color",
+      },
+    },
+    head: {
+      style: {
+        textAlign: "center",
+        justifyContent: "center",
+      },
+    },
+    headRow: {
+      style: {
+        paddingLeft: 10,
+        fontFamily: "Montserrat, sans-serif",
+        fontSize: "11px",
+        fontWeight: "bold",
+        color: "#555",
+        borderBottomWidth: "1px",
+        borderBottomStyle: "solid",
+        borderBottomColor: "#ccc",
+        justifyContent: "center",
+      },
+      denseStyle: {
+        justifyContent: "center",
+      },
+    },
+    headCells: {
+      style: {
+        justifyContent: "left",
+      },
+    },
+    cells: {
+      style: {
+        // borderBottomStyle: "solid",
+        // borderBottomWidth: "1px",
+        // borderBottomColor: "#ccc",
+        // borderRightStyle: "solid",
+        // borderRightWidth: "1px",
+        // borderRightColor: "#ccc",
+      },
+    },
+    noData: {
+      style: {
+        fontFamily: "Montserrat, sans-serif",
+        fontSize: "14px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "#000",
+        padding: 20,
+      },
+    },
   };
 
   return (
@@ -303,7 +400,7 @@ export const PanelLeft = () => {
             name="search"
             placeholder="Buscar ..."
             onChange={handleSearch}
-            onBlur={resetSearch}
+            // onBlur={resetSearch}
             //onFocus={() => setSearching(false)}
           />
         </Col>

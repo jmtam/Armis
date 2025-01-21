@@ -17,10 +17,12 @@
     "react-confirm-alert": "^3.0.6",
     "react-data-grid": "7.0.0-beta.47",
     "react-data-table-component": "^7.6.2",
+    "react-device-detect": "^2.2.3",
     "react-dom": "^19.0.0",
     "react-draft-wysiwyg": "^1.15.0",
     "react-hook-form": "^7.53.2",
     "react-resizable-panels": "^2.1.7",
+    "react-resize-detector": "^12.0.2",
     "react-router-dom": "^7.0.2",
     "react-scripts": "5.0.1",
     "react-secure-storage": "^1.3.2",
@@ -29,7 +31,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "set \"GENERATE_SOURCEMAP=false\" && react-scripts build",
+    "build": "set \"GENERATE_SOURCEMAP=false\" && react-scripts build --no-cache",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

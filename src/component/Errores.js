@@ -6,8 +6,7 @@ import { Container, Alert, Row, Button, Col } from "react-bootstrap";
 export const Errores = () => {
   const [moreInfo, setmoreInfo] = useState(false);
 
-  const { cleanError, errores, setLogout, setTimer } =
-    useContext(GlobalContext);
+  const { cleanError, errores, setTimer } = useContext(GlobalContext);
   const navigate = useNavigate();
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { GlobalContext } from "../context/GlobalContext";
 // import * as moment from "moment";
 // import "moment/locale/es";
@@ -9,12 +9,12 @@ import copy from "copy-to-clipboard";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Form from "react-bootstrap/Form";
-import { tableStyle } from "../services/helpers";
+
 import downloadIcon from "../assets/img/download.gif";
 //import LogEditor from "./Editor";
 import { Container, Button } from "react-bootstrap";
 
-export const PanelRight = () => {
+export const PanelRight = ({ windowsH }) => {
   const {
     logs,
     setTimer,
@@ -27,6 +27,8 @@ export const PanelRight = () => {
     getPanelRightLogById,
     // lastLogIndex,
     showlogs,
+    showopciones,
+    showmetricas,
     token,
     setShowLogs,
     reintentFetch,
@@ -41,6 +43,7 @@ export const PanelRight = () => {
   // const [editorData, setEditorData] = useState();
   //const [isLoading, setIsLoading] = useState(false);
   const [selectedRow, setSelectedRow] = useState();
+  const inputSearch = useRef();
 
   useEffect(() => {
     async function init() {
@@ -52,12 +55,23 @@ export const PanelRight = () => {
         }
         //setIsLoading(true);
         await getPanelRightLogs(prestadorId);
+
         //setIsLoading(false);
       }
     }
     init();
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prestadorId, timer, prestadores]);
+
+  useEffect(() => {
+    async function init() {
+      if (timer === 1) {
+        inputSearch.current.value = "";
+      }
+    }
+    init();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timer]);
 
   useEffect(() => {
     if (logs) {
@@ -198,6 +212,89 @@ export const PanelRight = () => {
     setData(searchData);
   };
 
+  const tableStyle = {
+    table: {
+      style: {
+        paddingLeft: 0,
+        marginTop: 10,
+        marginBottom: "5",
+        maxHeight:
+          showopciones || showmetricas ? windowsH - 170 : windowsH - 120,
+      },
+    },
+    rows: {
+      style: {
+        textWrap: "nowrap",
+        backgroundColor: "#fff",
+        fontFamily: '"Montserrat", sans-serif',
+        fontSize: "12px !important",
+      },
+      denseStyle: {
+        minHeight: "22px",
+      },
+      selectedHighlightStyle: {
+        "&:nth-of-type(n)": {
+          backgroundColor: "rgba(202, 245, 207, 0.7)",
+          // borderBottomColor: "#eee",
+          color: "#000",
+          fontWeight: "500",
+        },
+      },
+      highlightOnHoverStyle: {
+        backgroundColor: "#ccc",
+        transitionDuration: "0.15s",
+        transitionProperty: "background-color",
+      },
+    },
+    head: {
+      style: {
+        textAlign: "center",
+        justifyContent: "center",
+      },
+    },
+    headRow: {
+      style: {
+        paddingLeft: 10,
+        fontFamily: "Montserrat, sans-serif",
+        fontSize: "11px",
+        fontWeight: "bold",
+        color: "#555",
+        borderBottomWidth: "1px",
+        borderBottomStyle: "solid",
+        borderBottomColor: "#ccc",
+        justifyContent: "center",
+      },
+      denseStyle: {
+        justifyContent: "center",
+      },
+    },
+    headCells: {
+      style: {
+        justifyContent: "left",
+      },
+    },
+    cells: {
+      style: {
+        // borderBottomStyle: "solid",
+        // borderBottomWidth: "1px",
+        // borderBottomColor: "#ccc",
+        // borderRightStyle: "solid",
+        // borderRightWidth: "1px",
+        // borderRightColor: "#ccc",
+      },
+    },
+    noData: {
+      style: {
+        fontFamily: "Montserrat, sans-serif",
+        fontSize: "14px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "#000",
+        padding: 20,
+      },
+    },
+  };
   return (
     <Container
       fluid
@@ -205,7 +302,7 @@ export const PanelRight = () => {
         marginTop: "0",
         minHeight: "100%",
         padding: 0,
-        margin: 0,
+        marginLeft: 10,
       }}
     >
       <Row
@@ -222,7 +319,7 @@ export const PanelRight = () => {
           className="text14"
           style={{ padding: 0, margin: 0 }}
         >
-          Logs de {integracion}
+          Logs: {integracion}
           {/* {"  -  "} Last: {lastLogIndex} */}
           {/* {donwloadingId && " / Downloading:" + donwloadingId} */}
         </Col>
@@ -233,7 +330,7 @@ export const PanelRight = () => {
             type="search"
             placeholder="Buscar ..."
             onChange={handleSearch}
-            //onBlur={resetSearch}
+            ref={inputSearch}
           />
         </Col>
 
@@ -266,11 +363,12 @@ export const PanelRight = () => {
               defaultSortAsc={false}
               onRowClicked={handleChangeRowCLicked}
               highlightOnHover
+              responsive
               dense
               selectableRowSelected={(row) => row.id === selectedRow}
-              responsive
               pointerOnHover
               noDataComponent="No hay registros disponibles"
+              //customStyles={windowsH > 700 ? tableStyle : tableStyle2}
               customStyles={tableStyle}
             />
           </Col>

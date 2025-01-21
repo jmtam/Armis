@@ -9,6 +9,9 @@ import { Configuracion } from "./Configuracion";
 // import { useNavigate } from "react-router-dom";
 import { Metricas } from "./Metricas";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { useResizeDetector } from "react-resize-detector";
+// import DataTable from "react-data-table-component";
+// import { tableStyle } from "../services/helpers";
 
 export const Home = () => {
   // const navigate = useNavigate();
@@ -28,11 +31,15 @@ export const Home = () => {
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const { width, height, ref } = useResizeDetector({});
+
   return (
-    <Container className="panelContainer" fluid>
+    <Container ref={ref} className="panelContainer" fluid>
       <Row>
         <Col>
-          {showopciones || showopciones === 1 ? <Configuracion /> : null}
+          {showopciones || showopciones === 1 ? (
+            <Configuracion windowsH={height} windowsW={width} />
+          ) : null}
           {showmetricas || showmetricas === 1 ? <Metricas /> : null}
         </Col>
       </Row>
@@ -60,7 +67,7 @@ export const Home = () => {
               // lg={showlogs === 0 && 12}
               //xs={12}
             >
-              <PanelLeft />
+              <PanelLeft windowsH={height} />
             </Col>
           </Panel>
           <PanelResizeHandle />
@@ -76,7 +83,7 @@ export const Home = () => {
                 // md={7}
                 // lg={7}
               >
-                <PanelRight />
+                <PanelRight windowsH={height} />
               </Col>
             </Panel>
           ) : null}
