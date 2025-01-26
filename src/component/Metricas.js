@@ -55,7 +55,7 @@ export const Metricas = () => {
   return (
     <Row style={{ height: 50 }}>
       <Row className="rowMetricas align-items-center">
-        <Row className="rowMetrica" style={{ width: "160px", height: "30px" }}>
+        {/* <Row className="rowMetrica" style={{ width: "160px", height: "30px" }}>
           <Col
             md={"2"}
             className="colLeftMetrica text12"
@@ -81,7 +81,7 @@ export const Metricas = () => {
               </Form>
             )}
           </Col>
-        </Row>
+        </Row> */}
 
         <Row
           className="rowMetrica"

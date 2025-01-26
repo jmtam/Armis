@@ -41,11 +41,10 @@ export const NavbarMenu = () => {
     getPanelTopMetricas,
     metricas,
     reintentFetch,
-    cleanError,
   } = useContext(GlobalContext);
 
   const [menuopen, setmenuopen] = useState(false);
-  const [topError, setTopError] = useState(true);
+  const [topError, setTopError] = useState(false);
 
   const navigate = useNavigate();
 
@@ -71,8 +70,10 @@ export const NavbarMenu = () => {
 
   useEffect(() => {
     async function init() {
-      if (!showmetricas && timer === 1 && token && !reintentFetch)
+      if (!showmetricas && timer === 1 && token && !reintentFetch) {
         await getPanelTopMetricas();
+      }
+
       if (errores) {
         setTopError(true);
         //await cleanError();

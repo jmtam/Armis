@@ -476,13 +476,13 @@ export const GlobalContextProvider = ({ children }) => {
       });
   }
 
-  async function setPanelConfig(item, value) {
+  async function setPanelConfig(item, value, id) {
     dispatch({
       type: "LOADING",
       payload: true,
     });
 
-    await AppService.setPanelConfig(item, value)
+    await AppService.setPanelConfig(item, value, id)
       .then((response) => {
         // alert(JSON.stringify(response));
         // dispatch({

@@ -35,79 +35,13 @@ export const PanelLeft = ({ windowsH }) => {
     setLogout,
     showopciones,
     showmetricas,
+    setPanelConfig,
   } = useContext(GlobalContext);
 
   const [selectedRow, setSelectedRow] = useState();
+  const [selectedPrestadorAudit, setSelectedPrestadorAudit] = useState();
   const [data, setData] = useState([]);
   const [searching, setSearching] = useState(false);
-
-  useEffect(() => {
-    async function init() {
-      if (!prestadorId) {
-        setSelectedRow(1);
-        await setPrestadorId(1);
-      } else {
-        setSelectedRow(prestadorId);
-      }
-    }
-
-    init();
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [prestadorId]);
-
-  useEffect(() => {
-    if (prestadores) {
-      if (!searching) setData(prestadores);
-    }
-  }, [prestadores, searching]);
-
-  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-  useEffect(() => {
-    async function init() {
-      if (timer === 1 && token) {
-        if (prestadores) {
-          await sleep(timermseg);
-        }
-        await getPanelLeftPrestadores();
-      }
-    }
-    init();
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [prestadores, timer]);
-
-  useEffect(() => {
-    let interval = null;
-    if (reintentFetch || reintentFetch === 1) {
-      interval = setInterval(
-        async () => {
-          if (usuario && pwd) {
-            await getLoginToken(usuario, pwd);
-          } else {
-            setLogout();
-          }
-
-          await getPanelLeftPrestadores();
-
-          console.log(
-            "REINTENTO ACTIVO  " +
-              moment().format("HH:mm:ss").toString() +
-              " Timer encendido " +
-              timer +
-              " Tiempo de reintento " +
-              reintentmseg
-          );
-        },
-        reintentmseg ? reintentmseg : 5000
-      );
-    } else {
-      clearInterval(interval);
-      console.log(
-        "REINTENTO DESACTIVADO " + moment().format("HH:mm:ss").toString()
-      );
-    }
-    return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reintentFetch]);
 
   const columns = [
     {
@@ -132,7 +66,28 @@ export const PanelLeft = ({ windowsH }) => {
         paddingLeft: 5,
       },
     },
-
+    {
+      name: "Audit",
+      selector: (row) => row.auditar,
+      sortable: true,
+      compact: "true",
+      width: "50px",
+      center: true,
+      style: {
+        justifyContent: "center",
+      },
+      cell: (row) =>
+        row.auditar ? (
+          <i
+            className="bi bi-clipboard-check"
+            style={{
+              fontSize: "12pt",
+            }}
+          />
+        ) : (
+          row.auditar
+        ),
+    },
     {
       name: "Dom",
       selector: (row) => row.dominios,
@@ -218,6 +173,79 @@ export const PanelLeft = ({ windowsH }) => {
     },
   ];
 
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  useEffect(() => {
+    async function init() {
+      if (timer === 1 && token) {
+        if (prestadores) {
+          await sleep(timermseg);
+        }
+        await getPanelLeftPrestadores();
+      }
+    }
+    init();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prestadores, timer]);
+
+  useEffect(() => {
+    if (prestadores) {
+      if (!searching) {
+        setData(prestadores);
+        setSelectedPrestadorAudit(
+          prestadores.find((p) => p.id === selectedRow)
+        );
+      }
+    }
+  }, [prestadores, searching]);
+
+  useEffect(() => {
+    let interval = null;
+    if (reintentFetch || reintentFetch === 1) {
+      interval = setInterval(
+        async () => {
+          if (usuario && pwd) {
+            await getLoginToken(usuario, pwd);
+          } else {
+            setLogout();
+          }
+
+          await getPanelLeftPrestadores();
+
+          console.log(
+            "REINTENTO ACTIVO  " +
+              moment().format("HH:mm:ss").toString() +
+              " Timer encendido " +
+              timer +
+              " Tiempo de reintento " +
+              reintentmseg
+          );
+        },
+        reintentmseg ? reintentmseg : 5000
+      );
+    } else {
+      clearInterval(interval);
+      console.log(
+        "REINTENTO DESACTIVADO " + moment().format("HH:mm:ss").toString()
+      );
+    }
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reintentFetch]);
+
+  useEffect(() => {
+    async function init() {
+      if (!prestadorId) {
+        setSelectedRow(1);
+        await setPrestadorId(1);
+      } else {
+        setSelectedRow(prestadorId);
+      }
+    }
+
+    init();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prestadorId]);
+
   // ALERTAS
   // const conditionalRowStyles = [
   //   {
@@ -257,6 +285,7 @@ export const PanelLeft = ({ windowsH }) => {
       await setClearLogs();
       await clearLogLastIndex();
       await setPrestadorId(row.id);
+      setSelectedPrestadorAudit(row);
       setSelectedRow(row.id);
     }
   };
@@ -284,12 +313,6 @@ export const PanelLeft = ({ windowsH }) => {
 
     setData(searchData);
   };
-
-  // const resetSearch = async (e) => {
-  //   e.preventDefault();
-  //   e.target.value = "";
-  //   setSearching(false);
-  // };
 
   const tableStyle = {
     table: {
@@ -377,6 +400,13 @@ export const PanelLeft = ({ windowsH }) => {
     },
   };
 
+  const handleConfigSwitch = async (event, item) => {
+    // const obj = prestadores.find((p) => p.id === prestadorId);
+    await setPanelConfig(item, event.target.checked, selectedPrestadorAudit.id);
+    await getPanelLeftPrestadores();
+    //alert(JSON.stringify(selectedPrestadorAudit));
+  };
+
   return (
     <Container
       fluid
@@ -396,6 +426,31 @@ export const PanelLeft = ({ windowsH }) => {
         <Col className="text14" style={{ padding: 0, margin: 0 }}>
           Integración # {prestadorId && prestadorId}
         </Col>
+        {selectedPrestadorAudit && (
+          <>
+            <Col
+              md={"2"}
+              className="colLeftMetrica text12"
+              style={{ width: "60px" }}
+            >
+              {"Auditar"}
+            </Col>
+            <Col
+              md={"9"}
+              className="colRightMetricaCheck"
+              style={{ width: "60px", marginRight: 10 }}
+            >
+              <Form>
+                <Form.Check
+                  type="switch"
+                  checked={selectedPrestadorAudit.auditar}
+                  onChange={(i) => handleConfigSwitch(i, "audit")}
+                  //label={"#" + selectedPrestadorAudit.id}
+                />
+              </Form>
+            </Col>
+          </>
+        )}
         <Col>
           <Form.Control
             className="formInput"

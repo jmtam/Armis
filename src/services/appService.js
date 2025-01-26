@@ -142,8 +142,8 @@ const getPanelRightLogById = async (integracionId, logId) => {
     });
 };
 
-const setPanelConfig = async (item, value) => {
-  //alert("services" + id);
+const setPanelConfig = async (item, value, id) => {
+  // alert("services" + item + value + id);
 
   const token = secureLocalStorage.getItem("token");
 
@@ -155,6 +155,7 @@ const setPanelConfig = async (item, value) => {
     body: new URLSearchParams({
       itemName: item,
       itemVal: value,
+      itemId: id,
     }).toString(),
     //signal: AbortSignal.timeout(5000),
     signal: Timeout(5).signal,

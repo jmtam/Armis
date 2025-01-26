@@ -88,29 +88,17 @@ export const PanelRight = ({ windowsH }) => {
     //   selector: (row) => row.id,
     //   sortable: true,
     //   //center: true,
-    //   width: "80px",
+    //   width: "120px",
     //   compact: "true",
     //   //right: true,
-    //   cell: (row) =>
-    //     donwloadingId === row.id ? (
-    //       <div style={{ textAlign: "right" }}>
-    //         {/* <i
-    //           className="bi bi-cloud-download"
-    //           style={{ fontSize: "10pt", color: "green", paddingRight: 5 }}
-    //         /> */}
-    //         <img src={downloadIcon} alt="" width="30" />
-    //         {row.id}
-    //       </div>
-    //     ) : (
-    //       <div style={{ textAlign: "right" }}>{row.id}</div>
-    //     ),
     // },
     {
       name: "    Fecha",
       selector: (row) => row.fecha,
       sortable: true,
       compact: "true",
-      width: "95px",
+      width: "100px",
+
       cell: (row) =>
         donwloadingId === row.id ? (
           <img src={downloadIcon} alt="" width="30" />
@@ -126,10 +114,11 @@ export const PanelRight = ({ windowsH }) => {
       selector: (row) => row.dir,
       sortable: true,
       compact: "true",
+      center: true,
       width: "33px",
       style: {
         justifyContent: "center",
-        paddingRight: 5,
+        paddingRight: 0,
       },
     },
     {
